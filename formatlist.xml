@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<formatdefines>
+  <formatdefine id="2000x2000">
+    <width>2000</width>
+    <height>2000</height>
+  </formatdefine>
+  <formatdefine id="1000x1000">
+    <width>1000</width>
+    <height>1000</height>
+  </formatdefine>
+  <formatdefine id="640x480">
+    <width>640</width>
+    <height>480</height>
+  </formatdefine>
+  <formatdefine id="VGA_1024x768">
+    <width>1024</width>
+    <height>768</height>
+  </formatdefine>
+  <formatdefine id="UXGA_1600x1200">
+    <width>1600</width>
+    <height>1200</height>
+  </formatdefine>
+  <formatdefine id="FullHD_1920x1080">
+    <width>1920</width>
+    <height>1080</height>
+  </formatdefine>
+  <formatdefine id="FullHD_1920x1200">
+    <width>1920</width>
+    <height>1200</height>
+  </formatdefine>
+  <formatdefine id="A4_3508x2480">
+    <width>3508</width>
+    <height>2480</height>
+  </formatdefine>
+  <formatdefine id="B5_3035x2150">
+    <width>3035</width>
+    <height>2150</height>
+  </formatdefine>
+  <formatdefine id="4000x4000">
+    <width>4000</width>
+    <height>4000</height>
+  </formatdefine>
+</formatdefines>
