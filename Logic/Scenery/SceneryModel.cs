@@ -82,5 +82,12 @@ namespace ImageCreatePlaid
         /// </summary>
         public int ShapeCount { get; set; }
         public int ShapeMinSize { get; set; }
+
+        /// <summary>
+        /// 星空用
+        /// </summary>
+        public int LargeStarCount { get; set; }
+        public int SmallStarCount { get; set; }
+        public int SparkleCount { get; set; }
     }
 }

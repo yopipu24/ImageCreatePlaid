@@ -46,14 +46,17 @@ else
         </div>
         @if (!enabledStainedGlass)
         {
-            <div class="row">
-                <div class="col-sm-3">
-                    ブロック幅：
+            @if (enableBlock)
+            {
+                <div class="row">
+                    <div class="col-sm-3">
+                        ブロック幅：
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-control form-control-sm" type="number" value="@scenerysize" @onchange="OnChangePlaidSize" />
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    <input class="form-control form-control-sm" type="number" value="@scenerysize" @onchange="OnChangePlaidSize" />
-                </div>
-            </div>
+            }
             <div class="row">
                 <p></p>
             </div>
@@ -247,8 +250,26 @@ else
                 </div>
             </div>
             <div class="row border">
+                <div class="col-sm-4">
+                    最小サイズ：<input class="form-control form-control-sm" type="number" value="@shapeMinSize" @onchange="OnChangeShapeMinSize" />
+                </div>
+            </div>
+        }
+        @if (enabledStarCount)
+        {
+            <div class="row border">
                 <div class="col-sm-5">
-                    <input class="form-control form-control-sm" type="number" value="@shapeMinSize" @onchange="OnChangeShapeMinSize" />
+                    <MudSlider @bind-Value="@largeStarCount" Min="0" Max="500">大きい星の数:@largeStarCount</MudSlider>
+                </div>
+            </div>
+            <div class="row border">
+                <div class="col-sm-5">
+                    <MudSlider @bind-Value="@smallStarCount" Min="0" Max="3000">小さい星の数:@smallStarCount</MudSlider>
+                </div>
+            </div>
+            <div class="row border">
+                <div class="col-sm-5">
+                    <MudSlider @bind-Value="@sparkleCount" Min="0" Max="400">スパークルの数:@sparkleCount</MudSlider>
                 </div>
             </div>
         }
@@ -330,12 +351,17 @@ else
     private Bitmap bitmap;
     private string imgSource;
     private bool drawImage = false;
+    private bool enableBlock = true;
     private bool enabledStainedGlass = false;
     private float hueValue = 0;
     private float saturationValue = 20;
     private bool enabledShapeCount = false;
     private int shapeCount = 80;
     private string shapeMinSize = "20";
+    private bool enabledStarCount = false;
+    private int largeStarCount = 30;
+    private int smallStarCount = 250;
+    private int sparkleCount = 20;
 
     public enum vDottedValue { one, two, three }
     public enum hDottedValue { one, two, three }
@@ -359,7 +385,7 @@ else
         }
 
         //背景選択リスト
-        var kindLists = new string[] { "RandomShape", "RandomShape2", "RandomShapeMusic", "DottedLine", "DottedLine2", "DottedLineRandom", "StepCircle", "StepSquare", "StepSquareBug1", "StepSquareBug2", "StainedGlass", "None" };
+        var kindLists = new string[] { "RandomShape", "RandomShape2", "RandomShapeMusic", "RandomStarrySky", "RandomStarrySky2", "DottedLine", "DottedLine2", "DottedLineRandom", "StepCircle", "StepSquare", "StepSquareBug1", "StepSquareBug2", "StainedGlass", "None" };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
     }
@@ -419,6 +445,10 @@ else
         model.ShapeCount = shapeCount;
         model.ShapeMinSize = int.Parse(shapeMinSize);
 
+        model.LargeStarCount = largeStarCount;
+        model.SmallStarCount = smallStarCount;
+        model.SparkleCount = sparkleCount;
+
         //イメージ作成
         bitmap = BussinessLogic.NewCreateImage(fileWidth, fileHeight);
         bitmap = BussinessLogic.EditImage(bitmap, model);
@@ -454,7 +484,9 @@ else
         else
         {
             selectKind = e.Value.ToString();
+            enableBlock = true;
             enabledShapeCount = false;
+            enabledStarCount = false;
             if (selectKind == "StainedGlass")
             {
                 enabledStainedGlass = true;
@@ -478,8 +510,10 @@ else
                 {
                     enabledDotted = false;
                     enabledStep = false;
-                    if (selectKind == "RandomShape2") enabledShapeCount = true;
-                    if (selectKind == "RandomShapeMusic") enabledShapeCount = true;
+                    if (selectKind == "RandomShape2") { enabledShapeCount = true; enableBlock = false; }
+                    if (selectKind == "RandomShapeMusic") { enabledShapeCount = true; enableBlock = false; }
+                    if (selectKind == "RandomStarrySky") { enabledStarCount = true; enableBlock = false; }
+                    if (selectKind == "RandomStarrySky2") { enabledStarCount = true; enableBlock = false; }
                 }
             }
         }
