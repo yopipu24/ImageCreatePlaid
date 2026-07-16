@@ -1,63 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SkiaSharp;
 
 namespace ImageCreatePlaid
 {
-
     public class RandomShapeMusic : SceneryInterface
     {
         private static readonly string[] Symbols =
         {
-        "♪",
-        "♫",
-        "♬",
-        "♩",
-        "♭",
-        "♯"
+            "♪",
+            "♫",
+            "♬",
+            "♩",
+            "♭",
+            "♯"
         };
 
-        public Bitmap EditImage(Bitmap bmp, SceneryModel model)
+        public SKBitmap EditImage(SKBitmap bmp, SceneryModel model)
         {
-            using Graphics g = Graphics.FromImage(bmp);
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+            using var canvas = new SKCanvas(bmp);
 
-            Color baseColor = Color.FromArgb(
-                model.BaseAlpha,
+            var baseColor = new SKColor(
                 model.BaseColorRed,
                 model.BaseColorGreen,
-                model.BaseColorBlue
-            );
+                model.BaseColorBlue,
+                model.BaseAlpha);
 
-            Color color1 = Color.FromArgb(
-                model.Alpha,
+            var color1 = new SKColor(
                 model.VerticalColorRed1,
                 model.VerticalColorGreen1,
-                model.VerticalColorBlue1
-            );
+                model.VerticalColorBlue1,
+                model.BaseAlpha);
 
-            Color color2 = Color.FromArgb(
-                model.Alpha,
+            var color2 = new SKColor(
                 model.VerticalColorRed2,
                 model.VerticalColorGreen2,
-                model.VerticalColorBlue2
-            );
+                model.VerticalColorBlue2,
+                model.BaseAlpha);
 
-            g.Clear(baseColor);
+            canvas.Clear(baseColor);
 
             Random random = new Random();
 
-            int symbolCount = model.ShapeCount; ;
+            int symbolCount = model.ShapeCount;
             int minFontSize = model.ShapeMinSize;
             int maxFontSize = model.HorizontalSize1;
             int margin = 8;
             int maxRetry = 100;
 
-            List<RectangleF> usedAreas = new List<RectangleF>();
+            List<SKRect> usedAreas = new List<SKRect>();
+
+            using var typeface = SKTypeface.FromFamilyName("Segoe UI Symbol", SKFontStyle.Bold);
+
+            using var paint = new SKPaint
+            {
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill
+            };
 
             for (int i = 0; i < symbolCount; i++)
             {
@@ -68,30 +65,37 @@ namespace ImageCreatePlaid
                     string symbol = Symbols[random.Next(Symbols.Length)];
                     int fontSize = random.Next(minFontSize, maxFontSize + 1);
 
-                    using Font font = new Font("Segoe UI Symbol", fontSize, FontStyle.Bold, GraphicsUnit.Pixel);
+                    using var font = new SKFont(typeface, fontSize);
 
-                    SizeF textSize = g.MeasureString(symbol, font);
+                    font.MeasureText(symbol, out SKRect textBounds);
 
-                    if (textSize.Width >= bmp.Width || textSize.Height >= bmp.Height)
+                    float textWidth = textBounds.Width;
+                    float textHeight = textBounds.Height;
+
+                    if (textWidth >= bmp.Width || textHeight >= bmp.Height)
                     {
                         continue;
                     }
 
-                    float x = random.Next(0, Math.Max(1, bmp.Width - (int)textSize.Width));
-                    float y = random.Next(0, Math.Max(1, bmp.Height - (int)textSize.Height));
+                    float x = random.Next(0, Math.Max(1, bmp.Width - (int)textWidth));
+                    float y = random.Next(0, Math.Max(1, bmp.Height - (int)textHeight));
 
-                    RectangleF rect = new RectangleF(x, y, textSize.Width, textSize.Height);
-                    RectangleF hitArea = Inflate(rect, margin);
+                    var rect = new SKRect(x, y, x + textWidth, y + textHeight);
+                    var hitArea = Inflate(rect, margin);
 
                     if (IsOverlapped(hitArea, usedAreas))
                     {
                         continue;
                     }
 
-                    Color symbolColor = random.Next(2) == 0 ? color1 : color2;
-                    using Brush brush = new SolidBrush(symbolColor);
+                    paint.Color = random.Next(2) == 0 ? color1 : color2;
 
-                    g.DrawString(symbol, font, brush, x, y);
+                    using var textBlob = SKTextBlob.Create(
+                        symbol,
+                        font,
+                        new SKPoint(x - textBounds.Left, y - textBounds.Top));
+
+                    canvas.DrawText(textBlob, 0, 0, paint);
 
                     usedAreas.Add(hitArea);
                     found = true;
@@ -107,27 +111,34 @@ namespace ImageCreatePlaid
             return bmp;
         }
 
-        private static RectangleF Inflate(RectangleF rect, float margin)
+        private static SKRect Inflate(SKRect rect, float margin)
         {
-            return new RectangleF(
-                rect.X - margin,
-                rect.Y - margin,
-                rect.Width + margin * 2,
-                rect.Height + margin * 2
-            );
+            return new SKRect(
+                rect.Left - margin,
+                rect.Top - margin,
+                rect.Right + margin,
+                rect.Bottom + margin);
         }
 
-        private static bool IsOverlapped(RectangleF target, List<RectangleF> usedAreas)
+        private static bool IsOverlapped(SKRect target, List<SKRect> usedAreas)
         {
-            foreach (RectangleF area in usedAreas)
+            foreach (SKRect area in usedAreas)
             {
-                if (target.IntersectsWith(area))
+                if (Intersects(target, area))
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        private static bool Intersects(SKRect a, SKRect b)
+        {
+            return a.Left < b.Right
+                && a.Right > b.Left
+                && a.Top < b.Bottom
+                && a.Bottom > b.Top;
         }
     }
 }

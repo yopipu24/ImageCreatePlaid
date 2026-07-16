@@ -3,7 +3,9 @@
 @using System.Drawing
 @using System.Globalization
 @using System.Drawing.Imaging
-@rendermode InteractiveServer
+@using MudBlazor
+@using SkiaSharp;
+@inject HttpClient Http
 
 <PageTitle>チェック柄作成</PageTitle>
 
@@ -227,25 +229,24 @@ else
     private string str = string.Empty;
     private int fileWidth;
     private int fileHeight;
-    private Bitmap bitmap;
+    private SKBitmap bitmap;
     private string imgSource;
     private bool drawImage = false;
+    private string? xmlText;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(50);
 
         //ファイルサイズフォーマット読み込み
-        using (FileStream fs = new FileStream("formatlist.xml", FileMode.Open))
+        xmlText = await Http.GetStringAsync("formatlist.xml");
+        XmlSerializer serializer = new XmlSerializer(typeof(Models.FormatDefines));
+        formatDefines = (Models.FormatDefines)serializer.Deserialize(new StringReader(xmlText));
+        if (formatDefines != null)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(Models.FormatDefines));
-            formatDefines = (Models.FormatDefines)serializer.Deserialize(fs);
-            if (formatDefines != null)
-            {
-                selectId = formatDefines.Defines[0].Id;
-                fileWidth = formatDefines.Defines[0].Width;
-                fileHeight = formatDefines.Defines[0].Height;
-            }
+            selectId = formatDefines.Defines[0].Id;
+            fileWidth = formatDefines.Defines[0].Width;
+            fileHeight = formatDefines.Defines[0].Height;
         }
 
         //チェック柄選択リスト
@@ -285,15 +286,15 @@ else
         //チェック柄モデル作成
         PlaidModel model = new PlaidModel();
         model.KindPlaid = selectKind;
-        model.Alpha = 255;
+        model.BaseAlpha = 255;
         model.BaseBalance = 2;
         //色設定
-        int color1r = int.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
-        int color1g = int.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
-        int color1b = int.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
-        int color2r = int.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
-        int color2g = int.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
-        int color2b = int.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
+        byte color1r = byte.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
+        byte color1g = byte.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
+        byte color1b = byte.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
+        byte color2r = byte.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
+        byte color2g = byte.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
+        byte color2b = byte.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
         model.VerticalColorRed1 = color1r;
         model.VerticalColorGreen1 = color1g;
         model.VerticalColorBlue1 = color1b;
@@ -309,9 +310,9 @@ else
         model.HorizontalColorRed2 = color2r;
         model.HorizontalColorGreen2 = color2g;
         model.HorizontalColorBlue2 = color2b;
-        model.BaseColorRed = int.Parse(basecolor.Substring(0, 2), NumberStyles.HexNumber);
-        model.BaseColorGreen = int.Parse(basecolor.Substring(2, 2), NumberStyles.HexNumber);
-        model.BaseColorBlue = int.Parse(basecolor.Substring(4, 2), NumberStyles.HexNumber);
+        model.BaseColorRed = byte.Parse(basecolor.Substring(0, 2), NumberStyles.HexNumber);
+        model.BaseColorGreen = byte.Parse(basecolor.Substring(2, 2), NumberStyles.HexNumber);
+        model.BaseColorBlue = byte.Parse(basecolor.Substring(4, 2), NumberStyles.HexNumber);
         if (this.checkalpha)
         {
             model.BaseAlpha = 0;
@@ -325,10 +326,10 @@ else
         bitmap = BussinessLogic.NewCreateImage(fileWidth, fileHeight);
         bitmap = BussinessLogic.EditImage(bitmap, model);
 
-        MemoryStream ms = new MemoryStream();
-        bitmap.Save(ms, ImageFormat.Png);
-        ms.Seek(0, SeekOrigin.Begin);
-        imgSource = "data:image/png;base64, " + Convert.ToBase64String(ms.ToArray());
+        using var image = SKImage.FromBitmap(bitmap);
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        byte[] pngBytes = data.ToArray();
+        imgSource = $"data:image/png;base64,{Convert.ToBase64String(pngBytes)}";
         drawImage = true;
     }
 
@@ -360,9 +361,9 @@ else
             if (color1.Length == 6)
             {
                 bgcolor1 = "#" + color1;
-                color1redvalue = int.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
-                color1greenvalue = int.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
-                color1bluevalue = int.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
+                color1redvalue = byte.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
+                color1greenvalue = byte.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
+                color1bluevalue = byte.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
             }
 
             validateImageButton();
@@ -381,9 +382,9 @@ else
             if (color2.Length == 6)
             {
                 bgcolor2 = "#" + color2;
-                color2redvalue = int.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
-                color2greenvalue = int.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
-                color2bluevalue = int.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
+                color2redvalue = byte.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
+                color2greenvalue = byte.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
+                color2bluevalue = byte.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
             }
 
             validateImageButton();
@@ -402,9 +403,9 @@ else
             if (basecolor.Length == 6)
             {
                 bgbasecolor = "#" + basecolor;
-                basecolorredvalue = int.Parse(basecolor.Substring(0, 2), NumberStyles.HexNumber);
-                basecolorgreenvalue = int.Parse(basecolor.Substring(2, 2), NumberStyles.HexNumber);
-                basecolorbluevalue = int.Parse(basecolor.Substring(4, 2), NumberStyles.HexNumber);
+                basecolorredvalue = byte.Parse(basecolor.Substring(0, 2), NumberStyles.HexNumber);
+                basecolorgreenvalue = byte.Parse(basecolor.Substring(2, 2), NumberStyles.HexNumber);
+                basecolorbluevalue = byte.Parse(basecolor.Substring(4, 2), NumberStyles.HexNumber);
             }
 
             validateImageButton();
@@ -422,15 +423,15 @@ else
         string getColor1 = BussinessLogic.GetColor();
         color1 = getColor1;
         bgcolor1 = "#" + color1;
-        color1redvalue = int.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
-        color1greenvalue = int.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
-        color1bluevalue = int.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
+        color1redvalue = byte.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
+        color1greenvalue = byte.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
+        color1bluevalue = byte.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
         string getColor2 = BussinessLogic.GetColor();
         color2 = getColor2;
         bgcolor2 = "#" + color2;
-        color2redvalue = int.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
-        color2greenvalue = int.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
-        color2bluevalue = int.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
+        color2redvalue = byte.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
+        color2greenvalue = byte.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
+        color2bluevalue = byte.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
     }
 
     private void GetColor2_Button(MouseEventArgs e)
@@ -438,15 +439,15 @@ else
         string getColor1 = BussinessLogic.GetColor2();
         color1 = getColor1;
         bgcolor1 = "#" + color1;
-        color1redvalue = int.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
-        color1greenvalue = int.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
-        color1bluevalue = int.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
+        color1redvalue = byte.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
+        color1greenvalue = byte.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
+        color1bluevalue = byte.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
         string getColor2 = BussinessLogic.GetColor2();
         color2 = getColor2;
         bgcolor2 = "#" + color2;
-        color2redvalue = int.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
-        color2greenvalue = int.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
-        color2bluevalue = int.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
+        color2redvalue = byte.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
+        color2greenvalue = byte.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
+        color2bluevalue = byte.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
     }
 
     private void OnColor1SelectArea()

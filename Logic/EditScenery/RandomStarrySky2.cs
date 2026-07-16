@@ -1,42 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SkiaSharp;
 
 namespace ImageCreatePlaid
 {
     public class RandomStarrySky2 : SceneryInterface
     {
-        public Bitmap EditImage(Bitmap bmp, SceneryModel model)
+        public SKBitmap EditImage(SKBitmap bmp, SceneryModel model)
         {
-            using Graphics g = Graphics.FromImage(bmp);
+            using var canvas = new SKCanvas(bmp);
 
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            Color baseColor = Color.FromArgb(
-                model.BaseAlpha,
+            var baseColor = new SKColor(
                 model.BaseColorRed,
                 model.BaseColorGreen,
-                model.BaseColorBlue
-            );
+                model.BaseColorBlue,
+                model.BaseAlpha);
 
-            Color starColor1 = Color.FromArgb(
-                model.Alpha,
+            var starColor1 = new SKColor(
                 model.VerticalColorRed1,
                 model.VerticalColorGreen1,
-                model.VerticalColorBlue1
-            );
+                model.VerticalColorBlue1,
+                model.BaseAlpha);
 
-            Color starColor2 = Color.FromArgb(
-                model.Alpha,
+            var starColor2 = new SKColor(
                 model.VerticalColorRed2,
                 model.VerticalColorGreen2,
-                model.VerticalColorBlue2
-            );
+                model.VerticalColorBlue2,
+                model.BaseAlpha);
 
-            g.Clear(baseColor);
+            canvas.Clear(baseColor);
 
             Random random = new Random();
 
@@ -44,24 +34,30 @@ namespace ImageCreatePlaid
             int smallStarCount = model.SmallStarCount;
             int sparkleCount = model.SparkleCount;
 
-            DrawAnimeStars(g, bmp.Width, bmp.Height, random, bigStarCount, 24, 46, starColor1, starColor2);
-            DrawAnimeStars(g, bmp.Width, bmp.Height, random, smallStarCount, 10, 22, starColor1, starColor2);
-            DrawSparkles(g, bmp.Width, bmp.Height, random, sparkleCount, starColor1, starColor2);
+            DrawAnimeStars(canvas, bmp.Width, bmp.Height, random, bigStarCount, 24, 46, starColor1, starColor2);
+            DrawAnimeStars(canvas, bmp.Width, bmp.Height, random, smallStarCount, 10, 22, starColor1, starColor2);
+            DrawSparkles(canvas, bmp.Width, bmp.Height, random, sparkleCount, starColor1, starColor2);
 
             return bmp;
         }
 
         private static void DrawAnimeStars(
-            Graphics g,
+            SKCanvas canvas,
             int width,
             int height,
             Random random,
             int count,
             int minSize,
             int maxSize,
-            Color color1,
-            Color color2)
+            SKColor color1,
+            SKColor color2)
         {
+            using var paint = new SKPaint
+            {
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true
+            };
+
             for (int i = 0; i < count; i++)
             {
                 int size = random.Next(minSize, maxSize + 1);
@@ -70,30 +66,27 @@ namespace ImageCreatePlaid
                 int x = random.Next(radius, Math.Max(radius + 1, width - radius));
                 int y = random.Next(radius, Math.Max(radius + 1, height - radius));
 
-                Color color = random.Next(2) == 0 ? color1 : color2;
+                paint.Color = random.Next(2) == 0 ? color1 : color2;
                 float rotation = random.Next(0, 360);
 
-                PointF[] star = CreateStarPoints(
+                SKPoint[] star = CreateStarPoints(
                     x,
                     y,
                     radius,
                     radius * 0.45f,
                     5,
-                    rotation
-                );
+                    rotation);
 
-                using Brush brush = new SolidBrush(color);
-                g.FillPolygon(brush, star);
+                DrawFilledStar(canvas, star, paint);
 
-                // アニメっぽい白いハイライト
                 if (size >= 24)
                 {
-                    DrawHighlight(g, x, y, radius);
+                    DrawHighlight(canvas, x, y, radius);
                 }
             }
         }
 
-        private static PointF[] CreateStarPoints(
+        private static SKPoint[] CreateStarPoints(
             float centerX,
             float centerY,
             float outerRadius,
@@ -101,7 +94,7 @@ namespace ImageCreatePlaid
             int points,
             float rotationDegrees)
         {
-            PointF[] result = new PointF[points * 2];
+            SKPoint[] result = new SKPoint[points * 2];
 
             double rotation = Math.PI / 180 * rotationDegrees;
             double step = Math.PI / points;
@@ -111,39 +104,85 @@ namespace ImageCreatePlaid
                 double angle = rotation - Math.PI / 2 + step * i;
                 float radius = i % 2 == 0 ? outerRadius : innerRadius;
 
-                result[i] = new PointF(
+                result[i] = new SKPoint(
                     centerX + (float)Math.Cos(angle) * radius,
-                    centerY + (float)Math.Sin(angle) * radius
-                );
+                    centerY + (float)Math.Sin(angle) * radius);
             }
 
             return result;
         }
 
-        private static void DrawHighlight(Graphics g, int x, int y, int radius)
+        private static void DrawFilledStar(SKCanvas canvas, SKPoint[] star, SKPaint paint)
+        {
+            float centerX = 0;
+            float centerY = 0;
+
+            foreach (SKPoint point in star)
+            {
+                centerX += point.X;
+                centerY += point.Y;
+            }
+
+            var center = new SKPoint(centerX / star.Length, centerY / star.Length);
+
+            for (int i = 0; i < star.Length; i++)
+            {
+                SKPoint p1 = star[i];
+                SKPoint p2 = star[(i + 1) % star.Length];
+
+                var points = new[]
+                {
+                    center,
+                    p1,
+                    p2
+                };
+
+                using var vertices = SKVertices.CreateCopy(
+                    vmode: SKVertexMode.Triangles,
+                    positions: points,
+                    texs: null,
+                    colors: null,
+                    indices: null);
+
+                canvas.DrawVertices(vertices, SKBlendMode.SrcOver, paint);
+            }
+        }
+
+        private static void DrawHighlight(SKCanvas canvas, int x, int y, int radius)
         {
             int highlightSize = Math.Max(3, radius / 4);
 
-            using Brush brush = new SolidBrush(Color.FromArgb(180, 255, 255, 255));
+            using var paint = new SKPaint
+            {
+                Color = new SKColor(255, 255, 255, 180),
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true
+            };
 
-            g.FillEllipse(
-                brush,
+            canvas.DrawOval(
                 x - radius / 4,
                 y - radius / 3,
                 highlightSize,
-                highlightSize
-            );
+                highlightSize,
+                paint);
         }
 
         private static void DrawSparkles(
-            Graphics g,
+            SKCanvas canvas,
             int width,
             int height,
             Random random,
             int count,
-            Color color1,
-            Color color2)
+            SKColor color1,
+            SKColor color2)
         {
+            using var paint = new SKPaint
+            {
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 2,
+                IsAntialias = true
+            };
+
             for (int i = 0; i < count; i++)
             {
                 int size = random.Next(8, 18);
@@ -152,12 +191,10 @@ namespace ImageCreatePlaid
                 int x = random.Next(half, Math.Max(half + 1, width - half));
                 int y = random.Next(half, Math.Max(half + 1, height - half));
 
-                Color color = random.Next(2) == 0 ? color1 : color2;
+                paint.Color = random.Next(2) == 0 ? color1 : color2;
 
-                using Pen pen = new Pen(color, 2);
-
-                g.DrawLine(pen, x - half, y, x + half, y);
-                g.DrawLine(pen, x, y - half, x, y + half);
+                canvas.DrawLine(x - half, y, x + half, y, paint);
+                canvas.DrawLine(x, y - half, x, y + half, paint);
             }
         }
     }

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ namespace ImageCreatePlaid
 {
     public class Checkered2 : PlaidInterface
     {
-        public Bitmap EditImage(Bitmap bmp, PlaidModel model)
+        public SKBitmap EditImage(SKBitmap bmp, PlaidModel model)
         {
             int width = bmp.Width;
             int height = bmp.Height;
@@ -29,14 +29,14 @@ namespace ImageCreatePlaid
                         hflg = true;
                     }
 
-                    Color color = Color.FromArgb(model.BaseAlpha, model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue);
+                    SKColor color = new SKColor(model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue, model.BaseAlpha);
                     if (wflg && hflg == false)
                     {
-                        color = Color.FromArgb(model.Alpha, model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1);
+                        color = new SKColor(model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1, model.BaseAlpha);
                     }
                     else if (hflg && wflg == false)
                     {
-                        color = Color.FromArgb(model.Alpha, model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2);
+                        color = new SKColor(model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2, model.BaseAlpha);
                     }
 
                     bmp.SetPixel(x, y, color);

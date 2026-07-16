@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ namespace ImageCreatePlaid
 {
     public class VerticalLine1 : PlaidInterface
     {
-        public Bitmap EditImage(Bitmap bmp, PlaidModel model)
+        public SKBitmap EditImage(SKBitmap bmp, PlaidModel model)
         {
             int width = bmp.Width;
             int height = bmp.Height;
@@ -22,10 +22,10 @@ namespace ImageCreatePlaid
                     {
                         wflg = true;
                     }
-                    Color color = Color.FromArgb(model.BaseAlpha, model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue);
+                    SKColor color = new SKColor(model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue, model.BaseAlpha);
                     if (wflg)
                     {
-                        color = Color.FromArgb(model.Alpha, model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1);
+                        color = new SKColor(model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1, model.BaseAlpha);
                     }
 
                     bmp.SetPixel(x, y, color);

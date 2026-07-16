@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SkiaSharp;
+using System.Security.Cryptography;
 
 namespace ImageCreatePlaid
 {
@@ -14,9 +15,15 @@ namespace ImageCreatePlaid
         /// <param name="width">幅</param>
         /// <param name="height">高さ</param>
         /// <returns></returns>
-        public static Bitmap NewCreateImage(int width, int height)
+        public static SKBitmap NewCreateImage(int width, int height)
         {
-            return new Bitmap(width, height);
+            var imageInfo = new SKImageInfo(
+                width,
+                height,
+                SKColorType.Rgba8888,
+                SKAlphaType.Premul);
+
+            return new SKBitmap(imageInfo);
         }
 
         /// <summary>
@@ -25,10 +32,10 @@ namespace ImageCreatePlaid
         /// <param name="color1">１つ目のRGB値</param>
         /// <param name="color2">２つ目のRGB値</param>
         /// <returns></returns>
-        public static int CalcColor(int color1, int color2)
+        public static byte CalcColor(byte color1, byte color2)
         {
-            int calcColor = 0;
-            calcColor = (color1 + color2) / 2 * color1 / 255 * color2 / 255;
+            byte calcColor = 0;
+            calcColor = (byte)((color1 + color2) / 2 * color1 / 255 * color2 / 255);
             if (calcColor < 0)
             {
                 calcColor = 0;
@@ -43,10 +50,10 @@ namespace ImageCreatePlaid
         /// <param name="color1">１つ目のRGB値</param>
         /// <param name="color2">２つ目のRGB値</param>
         /// <returns></returns>
-        public static int CalcColor2(int color1, int color2)
+        public static byte CalcColor2(byte color1, byte color2)
         {
-            int calcColor = 0;
-            calcColor = (color1 + color2) / 2 - ((255 - color1) / 2 + (255 - color2) / 2) / 2;
+            byte calcColor = 0;
+            calcColor = (byte)((color1 + color2) / 2 - ((255 - color1) / 2 + (255 - color2) / 2) / 2);
             if (calcColor < 0)
             {
                 calcColor = 0;
@@ -60,13 +67,13 @@ namespace ImageCreatePlaid
         /// </summary>
         /// <param name="color">１つ目の色</param>
         /// <returns></returns>
-        public static Color CalcColor(Color color)
+        public static SKColor CalcColor(SKColor color)
         {
-            int rCalcColor = CalcColor(color.R, color.R);
-            int gCalcColor = CalcColor(color.G, color.G);
-            int bCalcColor = CalcColor(color.B, color.B);
+            byte rCalcColor = CalcColor(color.Red, color.Red);
+            byte gCalcColor = CalcColor(color.Green, color.Green);
+            byte bCalcColor = CalcColor(color.Blue, color.Blue);
 
-            return Color.FromArgb(rCalcColor, gCalcColor, bCalcColor);
+            return new SKColor(rCalcColor, gCalcColor, bCalcColor);
         }
 
         /// <summary>
@@ -74,13 +81,13 @@ namespace ImageCreatePlaid
         /// </summary>
         /// <param name="color">１つ目の色</param>
         /// <returns></returns>
-        public static Color CalcColor2(Color color)
+        public static SKColor CalcColor2(SKColor color)
         {
-            int rCalcColor = CalcColor2(color.R, color.R);
-            int gCalcColor = CalcColor2(color.G, color.G);
-            int bCalcColor = CalcColor2(color.B, color.B);
+            byte rCalcColor = CalcColor2(color.Red, color.Red);
+            byte gCalcColor = CalcColor2(color.Green, color.Green);
+            byte bCalcColor = CalcColor2(color.Blue, color.Blue);
 
-            return Color.FromArgb(rCalcColor, gCalcColor, bCalcColor);
+            return new SKColor(rCalcColor, gCalcColor, bCalcColor);
         }
 
         /// <summary>
@@ -89,16 +96,16 @@ namespace ImageCreatePlaid
         /// <param name="color1">１つ目の色</param>
         /// <param name="color2">２つ目の色</param>
         /// <returns></returns>
-        public static Color GetMixColor(Color color1, Color color2)
+        public static SKColor GetMixColor(SKColor color1, SKColor color2)
         {
-            int ucolor1r = color1.R;
-            int ucolor1g = color1.G;
-            int ucolor1b = color1.B;
-            int ucolor2r = color2.R;
-            int ucolor2g = color2.G;
-            int ucolor2b = color2.B;
+            byte ucolor1r = color1.Red;
+            byte ucolor1g = color1.Green;
+            byte ucolor1b = color1.Blue;
+            byte ucolor2r = color2.Red;
+            byte ucolor2g = color2.Green;
+            byte ucolor2b = color2.Blue;
 
-            return Color.FromArgb((ucolor1r + ucolor2r) / 2, (ucolor1g + ucolor2g) / 2, (ucolor1b + ucolor2b) / 2);
+            return new SKColor((byte)((ucolor1r + ucolor2r) / 2), (byte)((ucolor1g + ucolor2g) / 2), (byte)((ucolor1b + ucolor2b) / 2));
         }
 
         /// <summary>
@@ -116,22 +123,11 @@ namespace ImageCreatePlaid
         /// <returns></returns>
         public static string GetColor()
         {
-            string color = "FFFFFF";
+            int r = RandomNumberGenerator.GetInt32(196, 256);
+            int g = RandomNumberGenerator.GetInt32(196, 256);
+            int b = RandomNumberGenerator.GetInt32(196, 256);
 
-            //乱数生成
-            byte[] bs = new byte[4];
-            System.Security.Cryptography.RNGCryptoServiceProvider rng = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rng.GetBytes(bs);
-            rng.Dispose();
-            int i = System.BitConverter.ToInt32(bs, 0);
-
-            //背景として使うので薄めの色
-            System.Random r = new System.Random(i);
-            int randomNumber1 = r.Next(196, 256);
-            int randomNumber2 = r.Next(196, 256);
-            int randomNumber3 = r.Next(196, 256);
-            color = string.Format("{0:X2}{1:X2}{2:X2}",randomNumber1, randomNumber2, randomNumber3);
-            return color;
+            return string.Format("{0:X2}{1:X2}{2:X2}", r, g, b);
         }
 
         /// <summary>
@@ -140,22 +136,11 @@ namespace ImageCreatePlaid
         /// <returns></returns>
         public static string GetColor2()
         {
-            string color = "FFFFFF";
+            int r = RandomNumberGenerator.GetInt32(224, 256);
+            int g = RandomNumberGenerator.GetInt32(224, 256);
+            int b = RandomNumberGenerator.GetInt32(224, 256);
 
-            //乱数生成
-            byte[] bs = new byte[4];
-            System.Security.Cryptography.RNGCryptoServiceProvider rng = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rng.GetBytes(bs);
-            rng.Dispose();
-            int i = System.BitConverter.ToInt32(bs, 0);
-
-            //背景として使うのでさらに薄めの色
-            System.Random r = new System.Random(i);
-            int randomNumber1 = r.Next(224, 256);
-            int randomNumber2 = r.Next(224, 256);
-            int randomNumber3 = r.Next(224, 256);
-            color = string.Format("{0:X2}{1:X2}{2:X2}", randomNumber1, randomNumber2, randomNumber3);
-            return color;
+            return string.Format("{0:X2}{1:X2}{2:X2}", r, g, b);
         }
 
         /// <summary>
@@ -199,16 +184,12 @@ namespace ImageCreatePlaid
         /// <returns></returns>
         public static int GetRandomInt(int maxInt)
         {
+            if (maxInt <= 1)
+            {
+                return 1;
+            }
 
-            //乱数生成
-            byte[] bs = new byte[4];
-            System.Security.Cryptography.RNGCryptoServiceProvider rng = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rng.GetBytes(bs);
-            rng.Dispose();
-            int i = System.BitConverter.ToInt32(bs, 0);
-
-            System.Random r = new System.Random(i);
-            return r.Next(1, maxInt);
+            return RandomNumberGenerator.GetInt32(1, maxInt);
         }
 
         /// <summary>
@@ -217,13 +198,13 @@ namespace ImageCreatePlaid
         /// <param name="bmp">Bitmap</param>
         /// <param name="model">チェック柄モデル</param>
         /// <returns></returns>
-        public static Bitmap EditImage(Bitmap bmp, PlaidModel model)
+        public static SKBitmap EditImage(SKBitmap bmp, PlaidModel model)
         {
             //チェック柄のパターン毎に処理呼び出し
             Type t = Type.GetType("ImageCreatePlaid." + model.KindPlaid);
             object o = t.InvokeMember(null, BindingFlags.CreateInstance, null, null, null);
             object result = t.InvokeMember("EditImage", BindingFlags.InvokeMethod, null, o, new object[]{ bmp, model });
-            bmp = (Bitmap)result;
+            bmp = (SKBitmap)result;
 
             return bmp;
         }
@@ -234,48 +215,16 @@ namespace ImageCreatePlaid
         /// <param name="bmp">Bitmap</param>
         /// <param name="model">チェック柄モデル</param>
         /// <returns></returns>
-        public static Bitmap EditImage(Bitmap bmp, SceneryModel model)
+        public static SKBitmap EditImage(SKBitmap bmp, SceneryModel model)
         {
             //背景のパターン毎に処理呼び出し
             Type t = Type.GetType("ImageCreatePlaid." + model.KindScenery);
             object o = t.InvokeMember(null, BindingFlags.CreateInstance, null, null, null);
             object result = t.InvokeMember("EditImage", BindingFlags.InvokeMethod, null, o, new object[] { bmp, model });
-            bmp = (Bitmap)result;
+            bmp = (SKBitmap)result;
 
             return bmp;
         }
 
-        /// <summary>
-        /// 繰り返しイメージ作成
-        /// </summary>
-        /// <param name="filePath">繰り返しの元画像パス</param>
-        /// <param name="width">幅</param>
-        /// <param name="height">高さ</param>
-        /// <returns></returns>
-        public static Bitmap RepeatImage(string filePath, int width, int height)
-        {
-            Bitmap srcBitmap = new Bitmap(filePath);
-            int srcWidth = srcBitmap.Width;
-            int srcHeight = srcBitmap.Height;
-            int wCount = (int)Math.Floor((decimal)width / srcWidth);
-            int hCount = (int)Math.Floor((decimal)height / srcHeight);
-            Bitmap bitmap = NewCreateImage(width, height);
-            for(int i = 0; i < wCount; i++)
-            {
-                for(int j = 0; j < hCount; j++)
-                {
-                    for(int w = 0; w < srcWidth; w++)
-                    {
-                        for(int h = 0; h < srcHeight; h++)
-                        {
-                            Color c = srcBitmap.GetPixel(w, h);
-                            bitmap.SetPixel(i * srcWidth + w, j * srcHeight + h, c);
-                        }
-                    }
-                }
-            }
-
-            return bitmap;
-        }
     }
 }

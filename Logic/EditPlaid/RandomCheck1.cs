@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,18 +9,18 @@ namespace ImageCreatePlaid
 {
     public class RandomCheck1 : PlaidInterface
     {
-        public Bitmap EditImage(Bitmap bmp, PlaidModel model)
+        public SKBitmap EditImage(SKBitmap bmp, PlaidModel model)
         {
             int width = bmp.Width;
             int height = bmp.Height;
-            Bitmap originalBmp = BussinessLogic.NewCreateImage(model.VerticalSize1, model.HorizontalSize1);
+            SKBitmap originalBmp = BussinessLogic.NewCreateImage(model.VerticalSize1, model.HorizontalSize1);
             int colorFlg = BussinessLogic.GetRandomInt(3);
             int countFlg = BussinessLogic.GetRandomInt(model.VerticalSize1 / 3) + 5;
-            Color color0 = Color.FromArgb(model.BaseAlpha, model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue);
-            Color color1v = Color.FromArgb(model.Alpha, model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1);
-            Color color2v = Color.FromArgb(model.Alpha, model.VerticalColorRed2, model.VerticalColorGreen2, model.VerticalColorBlue2);
-            Color color1h = Color.FromArgb(model.Alpha, model.HorizontalColorRed1, model.HorizontalColorGreen1, model.HorizontalColorBlue1);
-            Color color2h = Color.FromArgb(model.Alpha, model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2);
+            SKColor color0 = new SKColor(model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue, model.BaseAlpha);
+            SKColor color1v = new SKColor(model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1, model.BaseAlpha);
+            SKColor color2v = new SKColor(model.VerticalColorRed2, model.VerticalColorGreen2, model.VerticalColorBlue2, model.BaseAlpha);
+            SKColor color1h = new SKColor(model.HorizontalColorRed1, model.HorizontalColorGreen1, model.HorizontalColorBlue1, model.BaseAlpha);
+            SKColor color2h = new SKColor(model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2, model.BaseAlpha);
             for (int i = 0; i < model.VerticalSize1; i++)
             {
                 for (int j = 0; j < model.HorizontalSize1; j++)
@@ -53,7 +53,7 @@ namespace ImageCreatePlaid
             {
                 for (int i = 0; i < model.VerticalSize1; i++)
                 {
-                    Color tempColor = originalBmp.GetPixel(i, j);
+                    SKColor tempColor = originalBmp.GetPixel(i, j);
                     if (colorFlg == 0)
                     {
                         tempColor = BussinessLogic.GetMixColor(tempColor, color0);
@@ -81,7 +81,7 @@ namespace ImageCreatePlaid
             {
                 for (int y = 0; y < height; y++)
                 {
-                    Color originalColor = originalBmp.GetPixel(x % model.VerticalSize1, y % model.HorizontalSize1);
+                    SKColor originalColor = originalBmp.GetPixel(x % model.VerticalSize1, y % model.HorizontalSize1);
                     bmp.SetPixel(x, y, originalColor);
                 }
             }

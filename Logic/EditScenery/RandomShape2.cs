@@ -1,42 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SkiaSharp;
 
 namespace ImageCreatePlaid
 {
     public class RandomShape2 : SceneryInterface
     {
-
-        public Bitmap EditImage(Bitmap bmp, SceneryModel model)
+        public SKBitmap EditImage(SKBitmap bmp, SceneryModel model)
         {
-            using Graphics g = Graphics.FromImage(bmp);
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            using var canvas = new SKCanvas(bmp);
 
-            Color baseColor = Color.FromArgb(
-                model.BaseAlpha,
+            var baseColor = new SKColor(
                 model.BaseColorRed,
                 model.BaseColorGreen,
-                model.BaseColorBlue
-            );
+                model.BaseColorBlue,
+                model.BaseAlpha);
 
-            Color color1 = Color.FromArgb(
-                model.Alpha,
+            var color1 = new SKColor(
                 model.VerticalColorRed1,
                 model.VerticalColorGreen1,
-                model.VerticalColorBlue1
-            );
+                model.VerticalColorBlue1,
+                model.BaseAlpha);
 
-            Color color2 = Color.FromArgb(
-                model.Alpha,
+            var color2 = new SKColor(
                 model.VerticalColorRed2,
                 model.VerticalColorGreen2,
-                model.VerticalColorBlue2
-            );
+                model.VerticalColorBlue2,
+                model.BaseAlpha);
 
-            g.Clear(baseColor);
+            canvas.Clear(baseColor);
 
             Random random = new Random();
 
@@ -46,11 +36,10 @@ namespace ImageCreatePlaid
             int margin = 5;
             int maxRetry = 200;
 
-            List<Rectangle> usedAreas = new List<Rectangle>();
+            List<SKRectI> usedAreas = new List<SKRectI>();
 
             for (int i = 0; i < shapeCount; i++)
             {
-                Rectangle rect;
                 bool found = false;
 
                 for (int retry = 0; retry < maxRetry; retry++)
@@ -60,14 +49,13 @@ namespace ImageCreatePlaid
                     int x = random.Next(0, bmp.Width - size);
                     int y = random.Next(0, bmp.Height - size);
 
-                    rect = new Rectangle(x, y, size, size);
-
-                    Rectangle hitArea = Inflate(rect, margin);
+                    var rect = new SKRectI(x, y, x + size, y + size);
+                    var hitArea = Inflate(rect, margin);
 
                     if (!IsOverlapped(hitArea, usedAreas))
                     {
-                        Color color = random.Next(2) == 0 ? color1 : color2;
-                        DrawRandomShape(g, random, rect, color);
+                        SKColor color = random.Next(2) == 0 ? color1 : color2;
+                        DrawRandomShape(canvas, random, rect, color);
 
                         usedAreas.Add(hitArea);
                         found = true;
@@ -75,7 +63,6 @@ namespace ImageCreatePlaid
                     }
                 }
 
-                // 空き場所が見つからなかった場合は、その図形は描かない
                 if (!found)
                 {
                     continue;
@@ -85,21 +72,20 @@ namespace ImageCreatePlaid
             return bmp;
         }
 
-        private static Rectangle Inflate(Rectangle rect, int margin)
+        private static SKRectI Inflate(SKRectI rect, int margin)
         {
-            return new Rectangle(
-                rect.X - margin,
-                rect.Y - margin,
-                rect.Width + margin * 2,
-                rect.Height + margin * 2
-            );
+            return new SKRectI(
+                rect.Left - margin,
+                rect.Top - margin,
+                rect.Right + margin,
+                rect.Bottom + margin);
         }
 
-        private static bool IsOverlapped(Rectangle target, List<Rectangle> usedAreas)
+        private static bool IsOverlapped(SKRectI target, List<SKRectI> usedAreas)
         {
-            foreach (Rectangle area in usedAreas)
+            foreach (SKRectI area in usedAreas)
             {
-                if (target.IntersectsWith(area))
+                if (Intersects(target, area))
                 {
                     return true;
                 }
@@ -107,42 +93,72 @@ namespace ImageCreatePlaid
 
             return false;
         }
+        private static bool Intersects(SKRectI a, SKRectI b)
+        {
+            return a.Left < b.Right
+                && a.Right > b.Left
+                && a.Top < b.Bottom
+                && a.Bottom > b.Top;
+        }
 
         private static void DrawRandomShape(
-            Graphics g,
+            SKCanvas canvas,
             Random random,
-            Rectangle rect,
-            Color color)
+            SKRectI rect,
+            SKColor color)
         {
             PatternShape shape = (PatternShape)random.Next(0, 4);
 
-            using Brush brush = new SolidBrush(color);
-            using Pen pen = new Pen(color, Math.Max(2, rect.Width / 8));
+            using var fillPaint = new SKPaint
+            {
+                Color = color,
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true
+            };
+
+            using var strokePaint = new SKPaint
+            {
+                Color = color,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = Math.Max(2, rect.Width / 8),
+                IsAntialias = true
+            };
+
+            var rectF = new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom);
 
             switch (shape)
             {
                 case PatternShape.Circle:
-                    g.FillEllipse(brush, rect);
+                    canvas.DrawOval(rectF, fillPaint);
                     break;
 
                 case PatternShape.Square:
-                    g.FillRectangle(brush, rect);
+                    canvas.DrawRect(rectF, fillPaint);
                     break;
 
                 case PatternShape.Triangle:
-                    Point[] points =
+                    var points = new[]
                     {
-                    new Point(rect.Left + rect.Width / 2, rect.Top),
-                    new Point(rect.Left, rect.Bottom),
-                    new Point(rect.Right, rect.Bottom)
-                };
+                        new SKPoint(rect.Left + rect.Width / 2f, rect.Top),
+                        new SKPoint(rect.Left, rect.Bottom),
+                        new SKPoint(rect.Right, rect.Bottom)
+                    };
 
-                    g.FillPolygon(brush, points);
+                    using (var vertices = SKVertices.CreateCopy(
+                        vmode: SKVertexMode.Triangles,
+                        positions: points,
+                        texs: null,
+                        colors: null,
+                        indices: null))
+                    {
+                        canvas.DrawVertices(vertices, SKBlendMode.SrcOver, fillPaint);
+                    }
+
                     break;
 
                 case PatternShape.Cross:
-                    g.DrawLine(pen, rect.Left, rect.Top, rect.Right, rect.Bottom);
-                    g.DrawLine(pen, rect.Right, rect.Top, rect.Left, rect.Bottom);
+                    canvas.DrawLine(rect.Left, rect.Top, rect.Right, rect.Bottom, strokePaint);
+                    canvas.DrawLine(rect.Right, rect.Top, rect.Left, rect.Bottom, strokePaint);
                     break;
             }
         }

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ namespace ImageCreatePlaid
 {
     public class Check1 : PlaidInterface
     {
-        public Bitmap EditImage(Bitmap bmp, PlaidModel model)
+        public SKBitmap EditImage(SKBitmap bmp, PlaidModel model)
         {
             int width = bmp.Width;
             int height = bmp.Height;
@@ -79,50 +79,50 @@ namespace ImageCreatePlaid
                         hCount += 1;
                     }
 
-                    Color color = Color.FromArgb(model.BaseAlpha, model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue);
+                    SKColor color = new SKColor(model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue, model.BaseAlpha);
                     if (wflg1 && hflg1)
                     {
-                        int rColor = BussinessLogic.CalcColor(model.VerticalColorRed1, model.HorizontalColorRed1);
-                        int gColor = BussinessLogic.CalcColor(model.VerticalColorGreen1, model.HorizontalColorGreen1);
-                        int bColor = BussinessLogic.CalcColor(model.VerticalColorBlue1, model.HorizontalColorBlue1);
-                        color = Color.FromArgb(model.Alpha, rColor, gColor, bColor);
+                        byte rColor = BussinessLogic.CalcColor(model.VerticalColorRed1, model.HorizontalColorRed1);
+                        byte gColor = BussinessLogic.CalcColor(model.VerticalColorGreen1, model.HorizontalColorGreen1);
+                        byte bColor = BussinessLogic.CalcColor(model.VerticalColorBlue1, model.HorizontalColorBlue1);
+                        color = new SKColor(rColor, gColor, bColor, model.BaseAlpha);
                     }
                     else if (wflg2 && hflg2)
                     {
-                        int rColor = BussinessLogic.CalcColor(model.VerticalColorRed2, model.HorizontalColorRed2);
-                        int gColor = BussinessLogic.CalcColor(model.VerticalColorGreen2, model.HorizontalColorGreen2);
-                        int bColor = BussinessLogic.CalcColor(model.VerticalColorBlue2, model.HorizontalColorBlue2);
-                        color = Color.FromArgb(model.Alpha, rColor, gColor, bColor);
+                        byte rColor = BussinessLogic.CalcColor(model.VerticalColorRed2, model.HorizontalColorRed2);
+                        byte gColor = BussinessLogic.CalcColor(model.VerticalColorGreen2, model.HorizontalColorGreen2);
+                        byte bColor = BussinessLogic.CalcColor(model.VerticalColorBlue2, model.HorizontalColorBlue2);
+                        color = new SKColor(rColor, gColor, bColor, model.BaseAlpha);
                     }
                     else if (wflg1 && hflg2)
                     {
-                        int rColor = BussinessLogic.CalcColor(model.VerticalColorRed1, +model.HorizontalColorRed2);
-                        int gColor = BussinessLogic.CalcColor(model.VerticalColorGreen1, model.HorizontalColorGreen2);
-                        int bColor = BussinessLogic.CalcColor(model.VerticalColorBlue1, +model.HorizontalColorBlue2);
-                        color = Color.FromArgb(model.Alpha, rColor, gColor, bColor);
+                        byte rColor = BussinessLogic.CalcColor(model.VerticalColorRed1, model.HorizontalColorRed2);
+                        byte gColor = BussinessLogic.CalcColor(model.VerticalColorGreen1, model.HorizontalColorGreen2);
+                        byte bColor = BussinessLogic.CalcColor(model.VerticalColorBlue1, model.HorizontalColorBlue2);
+                        color = new SKColor(rColor, gColor, bColor, model.BaseAlpha);
                     }
                     else if (wflg2 && hflg1)
                     {
-                        int rColor = BussinessLogic.CalcColor(model.VerticalColorRed2, model.HorizontalColorRed1);
-                        int gColor = BussinessLogic.CalcColor(model.VerticalColorGreen2, model.HorizontalColorGreen1);
-                        int bColor = BussinessLogic.CalcColor(model.VerticalColorBlue2, model.HorizontalColorBlue1);
-                        color = Color.FromArgb(model.Alpha, rColor, gColor, bColor);
+                        byte rColor = BussinessLogic.CalcColor(model.VerticalColorRed2, model.HorizontalColorRed1);
+                        byte gColor = BussinessLogic.CalcColor(model.VerticalColorGreen2, model.HorizontalColorGreen1);
+                        byte bColor = BussinessLogic.CalcColor(model.VerticalColorBlue2, model.HorizontalColorBlue1);
+                        color = new SKColor(rColor, gColor, bColor, model.BaseAlpha);
                     }
                     else if (wflg1)
                     {
-                        color = Color.FromArgb(model.Alpha, model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1);
+                        color = new SKColor(model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1, model.BaseAlpha);
                     }
                     else if (wflg2)
                     {
-                        color = Color.FromArgb(model.Alpha, model.VerticalColorRed2, model.VerticalColorGreen2, model.VerticalColorBlue2);
+                        color = new SKColor(model.VerticalColorRed2, model.VerticalColorGreen2, model.VerticalColorBlue2, model.BaseAlpha);
                     }
                     else if (hflg1)
                     {
-                        color = Color.FromArgb(model.Alpha, model.HorizontalColorRed1, model.HorizontalColorGreen1, model.HorizontalColorBlue1);
+                        color = new SKColor(model.HorizontalColorRed1, model.HorizontalColorGreen1, model.HorizontalColorBlue1, model.BaseAlpha);
                     }
                     else if (hflg2)
                     {
-                        color = Color.FromArgb(model.Alpha, model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2);
+                        color = new SKColor(model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2, model.BaseAlpha);
                     }
 
                     bmp.SetPixel(x, y, color);

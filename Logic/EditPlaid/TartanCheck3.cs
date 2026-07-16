@@ -1,60 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SkiaSharp;
 
 namespace ImageCreatePlaid
 {
     public class TartanCheck3 : PlaidInterface
     {
-        public Bitmap EditImage(Bitmap bmp, PlaidModel model)
+        public SKBitmap EditImage(SKBitmap bmp, PlaidModel model)
         {
             int width = bmp.Width;
             int height = bmp.Height;
             int stripeSize1 = 60;
             int stripeSize2 = 20;
-            var randomColor = Color.FromArgb(120, BussinessLogic.GetRandomInt(255), BussinessLogic.GetRandomInt(255), BussinessLogic.GetRandomInt(255));
-            using (Graphics g = Graphics.FromImage(bmp))
+
+            var randomColor = new SKColor(
+                (byte)BussinessLogic.GetRandomInt(255),
+                (byte)BussinessLogic.GetRandomInt(255),
+                (byte)BussinessLogic.GetRandomInt(255),
+                120);
+
+            using var canvas = new SKCanvas(bmp);
+
+            canvas.Clear(new SKColor(
+                model.BaseColorRed,
+                model.BaseColorGreen,
+                model.BaseColorBlue,
+                model.BaseAlpha));
+
+            using var paint = new SKPaint
             {
-                g.Clear(Color.FromArgb(model.BaseAlpha, model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue));
+                Style = SKPaintStyle.Fill,
+                IsAntialias = false
+            };
 
-                for (int x = 0; x < width; x += stripeSize1 + stripeSize2 * 2)
-                {
-                    using (Brush brush = new SolidBrush(Color.FromArgb(180, model.HorizontalColorRed1, model.HorizontalColorGreen1, model.HorizontalColorBlue1)))
-                    {
-                        g.FillRectangle(brush, x, 0, stripeSize1, height);
-                    }
+            for (int x = 0; x < width; x += stripeSize1 + stripeSize2 * 2)
+            {
+                paint.Color = new SKColor(
+                    model.HorizontalColorRed1,
+                    model.HorizontalColorGreen1,
+                    model.HorizontalColorBlue1,
+                    180);
 
-                    using (Brush brush = new SolidBrush(Color.FromArgb(150, model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2)))
-                    {
-                        g.FillRectangle(brush, x + stripeSize1, 0, stripeSize2, height);
-                    }
+                canvas.DrawRect(x, 0, stripeSize1, height, paint);
 
-                    using (Brush brush = new SolidBrush(randomColor))
-                    {
-                        g.FillRectangle(brush, x + stripeSize1 + stripeSize2, 0, stripeSize2, height);
-                    }
-                }
+                paint.Color = new SKColor(
+                    model.HorizontalColorRed2,
+                    model.HorizontalColorGreen2,
+                    model.HorizontalColorBlue2,
+                    150);
 
-                for (int y = 0; y < height; y += stripeSize1 + stripeSize2 * 2)
-                {
-                    using (Brush brush = new SolidBrush(Color.FromArgb(180, model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1)))
-                    {
-                        g.FillRectangle(brush, 0, y, width, stripeSize1);
-                    }
+                canvas.DrawRect(x + stripeSize1, 0, stripeSize2, height, paint);
 
-                    using (Brush brush = new SolidBrush(Color.FromArgb(150, model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2)))
-                    {
-                        g.FillRectangle(brush, 0, y + stripeSize1, width, stripeSize2);
-                    }
+                paint.Color = randomColor;
 
-                    using (Brush brush = new SolidBrush(randomColor))
-                    {
-                        g.FillRectangle(brush, 0, y + stripeSize1 + stripeSize2, width, stripeSize2);
-                    }
-                }
+                canvas.DrawRect(x + stripeSize1 + stripeSize2, 0, stripeSize2, height, paint);
+            }
+
+            for (int y = 0; y < height; y += stripeSize1 + stripeSize2 * 2)
+            {
+                paint.Color = new SKColor(
+                    model.VerticalColorRed1,
+                    model.VerticalColorGreen1,
+                    model.VerticalColorBlue1,
+                    180);
+
+                canvas.DrawRect(0, y, width, stripeSize1, paint);
+
+                paint.Color = new SKColor(
+                    model.HorizontalColorRed2,
+                    model.HorizontalColorGreen2,
+                    model.HorizontalColorBlue2,
+                    150);
+
+                canvas.DrawRect(0, y + stripeSize1, width, stripeSize2, paint);
+
+                paint.Color = randomColor;
+
+                canvas.DrawRect(0, y + stripeSize1 + stripeSize2, width, stripeSize2, paint);
             }
 
             return bmp;
