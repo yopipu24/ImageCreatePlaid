@@ -9,6 +9,13 @@ namespace ImageCreatePlaid
 {
     public static class BussinessLogic
     {
+        public static SKTypeface? MusicTypeface { get; private set; }
+
+        public static void SetMusicTypeface(SKTypeface typeface)
+        {
+            MusicTypeface = typeface;
+        }
+
         /// <summary>
         /// Bitmapデータ作成
         /// </summary>

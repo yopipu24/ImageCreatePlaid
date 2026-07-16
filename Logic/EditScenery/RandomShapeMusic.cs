@@ -6,13 +6,27 @@ namespace ImageCreatePlaid
     {
         private static readonly string[] Symbols =
         {
-            "♪",
-            "♫",
-            "♬",
-            "♩",
-            "♭",
-            "♯"
+            char.ConvertFromUtf32(0x1D11E), // G clef
+            char.ConvertFromUtf32(0x1D122), // F clef
+
+            char.ConvertFromUtf32(0x1D12C), // FLAT UP
+            char.ConvertFromUtf32(0x1D130), // SHARP UP
+            char.ConvertFromUtf32(0x1D15D), // WHOLE NOTE
+            char.ConvertFromUtf32(0x1D15E), // HALF NOTE
+            char.ConvertFromUtf32(0x1D15F), // QUARTER NOTE
+            char.ConvertFromUtf32(0x1D160), // EIGHTH NOTE
+            char.ConvertFromUtf32(0x1D15F), // QUARTER NOTE
+            char.ConvertFromUtf32(0x1D160), // EIGHTH NOTE
+            char.ConvertFromUtf32(0x1D15F), // QUARTER NOTE
+            char.ConvertFromUtf32(0x1D160), // EIGHTH NOTE
+            char.ConvertFromUtf32(0x1D194), // GRACE NOTE SLASH
+            char.ConvertFromUtf32(0x1D195), // GRACE NOTE NO SLASH
+            char.ConvertFromUtf32(0x0266C)  // Beamed Eighth
         };
+
+        public RandomShapeMusic()
+        {
+        }
 
         public SKBitmap EditImage(SKBitmap bmp, SceneryModel model)
         {
@@ -48,8 +62,6 @@ namespace ImageCreatePlaid
 
             List<SKRect> usedAreas = new List<SKRect>();
 
-            using var typeface = SKTypeface.FromFamilyName("Segoe UI Symbol", SKFontStyle.Bold);
-
             using var paint = new SKPaint
             {
                 IsAntialias = true,
@@ -64,9 +76,8 @@ namespace ImageCreatePlaid
                 {
                     string symbol = Symbols[random.Next(Symbols.Length)];
                     int fontSize = random.Next(minFontSize, maxFontSize + 1);
-
+                    SKTypeface typeface = BussinessLogic.MusicTypeface ?? SKTypeface.Default;
                     using var font = new SKFont(typeface, fontSize);
-
                     font.MeasureText(symbol, out SKRect textBounds);
 
                     float textWidth = textBounds.Width;
@@ -100,11 +111,6 @@ namespace ImageCreatePlaid
                     usedAreas.Add(hitArea);
                     found = true;
                     break;
-                }
-
-                if (!found)
-                {
-                    continue;
                 }
             }
 

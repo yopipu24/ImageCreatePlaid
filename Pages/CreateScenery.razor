@@ -389,6 +389,12 @@ else
         var kindLists = new string[] { "RandomShape", "RandomShape2", "RandomShapeMusic", "RandomStarrySky", "RandomStarrySky2", "DottedLine", "DottedLine2", "DottedLineRandom", "StepCircle", "StepSquare", "StepSquareBug1", "StepSquareBug2", "StainedGlass", "None" };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
+
+        // フォント読み込み
+        byte[] fontBytes = await Http.GetByteArrayAsync("fonts/NotoMusic-Regular.ttf");
+        using var stream = new MemoryStream(fontBytes);
+        SKTypeface typeface = SKTypeface.FromStream(stream);
+        BussinessLogic.SetMusicTypeface(typeface);
     }
 
     private void OnButtonClick(MouseEventArgs e)
