@@ -35,10 +35,10 @@ jobs:
         run: dotnet workload install wasm-tools
 
       - name: Restore
-        run: dotnet restore ./ImageCreatePlaid/ImageCreatePlaid.csproj
+        run: dotnet restore ./ImageCreatePlaid.csproj
 
       - name: Publish
-        run: dotnet publish ./ImageCreatePlaid/ImageCreatePlaid.csproj -c Release -o release
+        run: dotnet publish ./ImageCreatePlaid.csproj -c Release -o release
 
       - name: Prepare GitHub Pages
         shell: bash
