@@ -17,6 +17,14 @@
 }
 else
 {
+    @if (procLoading)
+    {
+        <div class="overlay">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">処理中...</span>
+            </div>
+        </div>
+    }
     <div class="container border">
         <div class="row">
             <div class="col-sm-3">
@@ -50,6 +58,17 @@ else
             </div>
             <div class="col-sm-3">
                 <input class="form-control form-control-sm" type="number" value="@plaidsize" @onchange="OnChangePlaidSize" />
+            </div>
+        </div>
+        <div class="row">
+            <p></p>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <button class="btn btn-secondary" @onclick="GetColor_Button">色ランダム1</button>
+            </div>
+            <div class="col-sm-4">
+                <button class="btn btn-secondary" @onclick="GetColor2_Button">色ランダム2</button>
             </div>
         </div>
         <div class="row">
@@ -152,14 +171,6 @@ else
             <p></p>
         </div>
         <div class="row">
-            <div class="col-sm-4">
-                <button class="btn btn-secondary" @onclick="GetColor_Button">色ランダム1</button>
-            </div>
-            <div class="col-sm-4">
-                <button class="btn btn-secondary" @onclick="GetColor2_Button">色ランダム2</button>
-            </div>
-        </div>
-        <div class="row">
             <p></p>
         </div>
         <div class="row">
@@ -198,10 +209,24 @@ else
     .basecolor {
         background-color: var(--bg-basecolor);
     }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* 最前面に表示 */
+    }
 </style>
 
 @code {
     private Models.FormatDefines formatDefines;
+    private bool procLoading = false;
     private string selectId = string.Empty;
     private List<string> kindList = new List<string>();
     private string selectKind = string.Empty;
@@ -276,61 +301,73 @@ else
             "VerticalLine1",
             "HorizontalLine1",
             "PolkaDot1"
-        };
+    };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
     }
 
-    private void OnButtonClick(MouseEventArgs e)
+    private async Task OnButtonClick(MouseEventArgs e)
     {
-        //チェック柄モデル作成
-        PlaidModel model = new PlaidModel();
-        model.KindPlaid = selectKind;
-        model.BaseAlpha = 255;
-        model.BaseBalance = 2;
-        //色設定
-        byte color1r = byte.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
-        byte color1g = byte.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
-        byte color1b = byte.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
-        byte color2r = byte.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
-        byte color2g = byte.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
-        byte color2b = byte.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
-        model.VerticalColorRed1 = color1r;
-        model.VerticalColorGreen1 = color1g;
-        model.VerticalColorBlue1 = color1b;
-        model.VerticalSize1 = int.Parse(plaidsize);
-        model.HorizontalColorRed1 = color1r;
-        model.HorizontalColorGreen1 = color1g;
-        model.HorizontalColorBlue1 = color1b;
-        model.HorizontalSize1 = int.Parse(plaidsize);
-        model.VerticalColorRed2 = color2r;
-        model.VerticalColorGreen2 = color2g;
-        model.VerticalColorBlue2 = color2b;
-        model.VerticalSize2 = int.Parse(plaidsize);
-        model.HorizontalColorRed2 = color2r;
-        model.HorizontalColorGreen2 = color2g;
-        model.HorizontalColorBlue2 = color2b;
-        model.BaseColorRed = byte.Parse(basecolor.Substring(0, 2), NumberStyles.HexNumber);
-        model.BaseColorGreen = byte.Parse(basecolor.Substring(2, 2), NumberStyles.HexNumber);
-        model.BaseColorBlue = byte.Parse(basecolor.Substring(4, 2), NumberStyles.HexNumber);
-        if (this.checkalpha)
+        procLoading = true;
+        drawImage = false;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(50);
+
+        try
         {
-            model.BaseAlpha = 0;
-        }
-        else
-        {
+            //チェック柄モデル作成
+            PlaidModel model = new PlaidModel();
+            model.KindPlaid = selectKind;
             model.BaseAlpha = 255;
+            model.BaseBalance = 2;
+            //色設定
+            byte color1r = byte.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);
+            byte color1g = byte.Parse(color1.Substring(2, 2), NumberStyles.HexNumber);
+            byte color1b = byte.Parse(color1.Substring(4, 2), NumberStyles.HexNumber);
+            byte color2r = byte.Parse(color2.Substring(0, 2), NumberStyles.HexNumber);
+            byte color2g = byte.Parse(color2.Substring(2, 2), NumberStyles.HexNumber);
+            byte color2b = byte.Parse(color2.Substring(4, 2), NumberStyles.HexNumber);
+            model.VerticalColorRed1 = color1r;
+            model.VerticalColorGreen1 = color1g;
+            model.VerticalColorBlue1 = color1b;
+            model.VerticalSize1 = int.Parse(plaidsize);
+            model.HorizontalColorRed1 = color1r;
+            model.HorizontalColorGreen1 = color1g;
+            model.HorizontalColorBlue1 = color1b;
+            model.HorizontalSize1 = int.Parse(plaidsize);
+            model.VerticalColorRed2 = color2r;
+            model.VerticalColorGreen2 = color2g;
+            model.VerticalColorBlue2 = color2b;
+            model.VerticalSize2 = int.Parse(plaidsize);
+            model.HorizontalColorRed2 = color2r;
+            model.HorizontalColorGreen2 = color2g;
+            model.HorizontalColorBlue2 = color2b;
+            model.BaseColorRed = byte.Parse(basecolor.Substring(0, 2), NumberStyles.HexNumber);
+            model.BaseColorGreen = byte.Parse(basecolor.Substring(2, 2), NumberStyles.HexNumber);
+            model.BaseColorBlue = byte.Parse(basecolor.Substring(4, 2), NumberStyles.HexNumber);
+            if (this.checkalpha)
+            {
+                model.BaseAlpha = 0;
+            }
+            else
+            {
+                model.BaseAlpha = 255;
+            }
+
+            //イメージ作成
+            bitmap = BussinessLogic.NewCreateImage(fileWidth, fileHeight);
+            bitmap = BussinessLogic.EditImage(bitmap, model);
+
+            using var image = SKImage.FromBitmap(bitmap);
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            byte[] pngBytes = data.ToArray();
+            imgSource = $"data:image/png;base64,{Convert.ToBase64String(pngBytes)}";
+            drawImage = true;
         }
-
-        //イメージ作成
-        bitmap = BussinessLogic.NewCreateImage(fileWidth, fileHeight);
-        bitmap = BussinessLogic.EditImage(bitmap, model);
-
-        using var image = SKImage.FromBitmap(bitmap);
-        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        byte[] pngBytes = data.ToArray();
-        imgSource = $"data:image/png;base64,{Convert.ToBase64String(pngBytes)}";
-        drawImage = true;
+        finally
+        {
+            procLoading = false;
+        }
     }
 
     private void OnSelectFormat(ChangeEventArgs e)
