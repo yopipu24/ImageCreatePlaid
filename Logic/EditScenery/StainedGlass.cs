@@ -74,19 +74,6 @@ namespace ImageCreatePlaid
                 }
             }
 
-            using var pen = new SKPaint
-            {
-                Color = new SKColor(50, 50, 50, 180),
-                Style = SKPaintStyle.Stroke,
-                StrokeWidth = 1.2f,
-                IsAntialias = true
-            };
-
-            foreach (SKPointI center in points)
-            {
-                canvas.DrawOval(center.X - 1, center.Y - 1, 2, 2, pen);
-            }
-
             return bmp;
         }
 

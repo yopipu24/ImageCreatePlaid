@@ -103,11 +103,11 @@ namespace ImageCreatePlaid
                         }
                     }
 
-                    int offsetX = x * model.HorizontalSize1 + (model.HorizontalSize1 - circleSize) / 2;
-                    int offsetY = y * model.VerticalSize1 + (model.VerticalSize1 - circleSize) / 2;
+                    int offsetX = x * model.HorizontalSize1;
+                    int offsetY = y * model.VerticalSize1;
 
                     paint.Color = currentColor;
-                    canvas.DrawOval(offsetX, offsetY, circleSize, circleSize, paint);
+                    canvas.DrawOval(offsetX, offsetY, circleSize / 2, circleSize / 2, paint);
                 }
             }
 
