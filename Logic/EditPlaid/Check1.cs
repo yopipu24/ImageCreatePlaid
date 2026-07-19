@@ -1,9 +1,4 @@
 ﻿using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageCreatePlaid
 {
@@ -85,44 +80,44 @@ namespace ImageCreatePlaid
                         byte rColor = BussinessLogic.CalcColor(model.VerticalColorRed1, model.HorizontalColorRed1);
                         byte gColor = BussinessLogic.CalcColor(model.VerticalColorGreen1, model.HorizontalColorGreen1);
                         byte bColor = BussinessLogic.CalcColor(model.VerticalColorBlue1, model.HorizontalColorBlue1);
-                        color = new SKColor(rColor, gColor, bColor, model.BaseAlpha);
+                        color = new SKColor(rColor, gColor, bColor, model.Alpha);
                     }
                     else if (wflg2 && hflg2)
                     {
                         byte rColor = BussinessLogic.CalcColor(model.VerticalColorRed2, model.HorizontalColorRed2);
                         byte gColor = BussinessLogic.CalcColor(model.VerticalColorGreen2, model.HorizontalColorGreen2);
                         byte bColor = BussinessLogic.CalcColor(model.VerticalColorBlue2, model.HorizontalColorBlue2);
-                        color = new SKColor(rColor, gColor, bColor, model.BaseAlpha);
+                        color = new SKColor(rColor, gColor, bColor, model.Alpha);
                     }
                     else if (wflg1 && hflg2)
                     {
                         byte rColor = BussinessLogic.CalcColor(model.VerticalColorRed1, model.HorizontalColorRed2);
                         byte gColor = BussinessLogic.CalcColor(model.VerticalColorGreen1, model.HorizontalColorGreen2);
                         byte bColor = BussinessLogic.CalcColor(model.VerticalColorBlue1, model.HorizontalColorBlue2);
-                        color = new SKColor(rColor, gColor, bColor, model.BaseAlpha);
+                        color = new SKColor(rColor, gColor, bColor, model.Alpha);
                     }
                     else if (wflg2 && hflg1)
                     {
                         byte rColor = BussinessLogic.CalcColor(model.VerticalColorRed2, model.HorizontalColorRed1);
                         byte gColor = BussinessLogic.CalcColor(model.VerticalColorGreen2, model.HorizontalColorGreen1);
                         byte bColor = BussinessLogic.CalcColor(model.VerticalColorBlue2, model.HorizontalColorBlue1);
-                        color = new SKColor(rColor, gColor, bColor, model.BaseAlpha);
+                        color = new SKColor(rColor, gColor, bColor, model.Alpha);
                     }
                     else if (wflg1)
                     {
-                        color = new SKColor(model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1, model.BaseAlpha);
+                        color = new SKColor(model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1, model.Alpha);
                     }
                     else if (wflg2)
                     {
-                        color = new SKColor(model.VerticalColorRed2, model.VerticalColorGreen2, model.VerticalColorBlue2, model.BaseAlpha);
+                        color = new SKColor(model.VerticalColorRed2, model.VerticalColorGreen2, model.VerticalColorBlue2, model.Alpha);
                     }
                     else if (hflg1)
                     {
-                        color = new SKColor(model.HorizontalColorRed1, model.HorizontalColorGreen1, model.HorizontalColorBlue1, model.BaseAlpha);
+                        color = new SKColor(model.HorizontalColorRed1, model.HorizontalColorGreen1, model.HorizontalColorBlue1, model.Alpha);
                     }
                     else if (hflg2)
                     {
-                        color = new SKColor(model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2, model.BaseAlpha);
+                        color = new SKColor(model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2, model.Alpha);
                     }
 
                     bmp.SetPixel(x, y, color);

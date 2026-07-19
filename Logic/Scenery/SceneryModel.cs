@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ImageCreatePlaid
+﻿namespace ImageCreatePlaid
 {
     public class SceneryModel
     {
@@ -19,7 +13,7 @@ namespace ImageCreatePlaid
         /// 背景種類
         /// </summary>
         public string KindScenery { get; set; }
-        public int Alpha { get; set; }
+        public byte Alpha { get; set; }
         public int BaseBalance { get; set; }
 
         public byte BaseColorRed { get; set; }

@@ -18,13 +18,13 @@ namespace ImageCreatePlaid
                 model.VerticalColorRed1,
                 model.VerticalColorGreen1,
                 model.VerticalColorBlue1,
-                model.BaseAlpha);
+                model.Alpha);
 
             var starColor2 = new SKColor(
                 model.VerticalColorRed2,
                 model.VerticalColorGreen2,
                 model.VerticalColorBlue2,
-                model.BaseAlpha);
+                model.Alpha);
 
             canvas.Clear(baseColor);
 

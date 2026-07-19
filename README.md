@@ -27,6 +27,7 @@ ImageCreatePlaid
 　・Blazor Web Appアプリケーションに修正（2024年頃）
 　・背景の生成処理作成
 　・Blazor WebAssembly StandAloneアプリケーションに修正
+　・GitHub Pagesに公開
 
 ■ライセンス
 　このプロジェクトはMITライセンスです。詳細はLICENSE.mdファイルに記載しています。

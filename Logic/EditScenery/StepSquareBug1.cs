@@ -22,25 +22,25 @@ namespace ImageCreatePlaid
                 model.HorizontalColorRed1,
                 model.HorizontalColorGreen1,
                 model.HorizontalColorBlue1,
-                model.BaseAlpha);
+                model.Alpha);
 
             var v1Color = new SKColor(
                 model.VerticalColorRed1,
                 model.VerticalColorGreen1,
                 model.VerticalColorBlue1,
-                model.BaseAlpha);
+                model.Alpha);
 
             var h2Color = new SKColor(
                 model.HorizontalColorRed2,
                 model.HorizontalColorGreen2,
                 model.HorizontalColorBlue2,
-                model.BaseAlpha);
+                model.Alpha);
 
             var v2Color = new SKColor(
                 model.VerticalColorRed2,
                 model.VerticalColorGreen2,
                 model.VerticalColorBlue2,
-                model.BaseAlpha);
+                model.Alpha);
 
             string pattern = model.StepPattern;
             SKColor currentColor = h1Color;

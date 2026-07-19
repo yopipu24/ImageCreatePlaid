@@ -1,8 +1,6 @@
 ﻿@page "/createplaid"
 @using System.Xml.Serialization
-@using System.Drawing
 @using System.Globalization
-@using System.Drawing.Imaging
 @using MudBlazor
 @using SkiaSharp;
 @inject HttpClient Http
@@ -318,7 +316,7 @@ else
             //チェック柄モデル作成
             PlaidModel model = new PlaidModel();
             model.KindPlaid = selectKind;
-            model.BaseAlpha = 255;
+            model.Alpha = 255;
             model.BaseBalance = 2;
             //色設定
             byte color1r = byte.Parse(color1.Substring(0, 2), NumberStyles.HexNumber);

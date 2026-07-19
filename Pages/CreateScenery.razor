@@ -1,8 +1,6 @@
 ﻿@page "/createscenery"
 @using System.Xml.Serialization
-@using System.Drawing
 @using System.Globalization
-@using System.Drawing.Imaging
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
@@ -408,7 +406,7 @@ else
         }
 
         //背景選択リスト
-        var kindLists = new string[] { "RandomShape", "RandomShape2", "RandomShapeMusic", "RandomStarrySky", "RandomStarrySky2", "DottedLine", "DottedLine2", "DottedLineRandom", "StepCircle", "StepSquare", "StepSquareBug1", "StepSquareBug2", "StainedGlass", "None" };
+        var kindLists = new string[] { "RandomShape", "RandomShape2", "RandomShapeMusic", "RandomStarrySky", "RandomStarrySky2", "DottedLine", "DottedLine2", "DottedLineRandom", "StepCircle", "StepSquare", "StainedGlass", "None" };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
 
