@@ -1,6 +1,5 @@
 # ImageCreatePlaid
 ## チェック柄・背景作成ツール
----
 チェック柄の画像、色々な背景画像を自動で作成するツールです。
 
 ## ■使用方法
@@ -28,7 +27,7 @@
 * 背景の生成処理作成
 * Blazor WebAssembly StandAloneアプリケーションに修正
 * GitHub Pagesに公開
----
+
 ## ■ライセンス
 このプロジェクトはMITライセンスです。詳細はLICENSE.mdファイルに記載しています。  
 This project is licensed under the MIT License, see the LICENSE.md file for details  

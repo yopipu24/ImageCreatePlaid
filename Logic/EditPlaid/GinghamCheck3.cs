@@ -17,9 +17,11 @@ namespace ImageCreatePlaid
             model.HorizontalColorBlue1 = BussinessLogic.CalcColor(model.HorizontalColorBlue1, 255);
             int width = bmp.Width;
             int height = bmp.Height;
-            for (int x = 0; x < width; x++)
+
+            SKBitmap originalBmp = BussinessLogic.NewCreateImage(model.VerticalSize1, model.HorizontalSize1);
+            for (int x = 0; x < originalBmp.Width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < originalBmp.Height; y++)
                 {
                     bool wflg = false;
                     bool hflg = false;
@@ -50,9 +52,12 @@ namespace ImageCreatePlaid
                         color = new SKColor(model.HorizontalColorRed1, model.HorizontalColorGreen1, model.HorizontalColorBlue1, model.Alpha);
                     }
 
-                    bmp.SetPixel(x, y, color);
+                    originalBmp.SetPixel(x, y, color);
                 }
             }
+
+            bmp = BussinessLogic.RepeatImage(width, height, originalBmp);
+
             return bmp;
         }
     }

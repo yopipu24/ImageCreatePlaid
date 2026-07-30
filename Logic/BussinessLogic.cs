@@ -230,5 +230,41 @@ namespace ImageCreatePlaid
             return bmp;
         }
 
+        /// <summary>
+        /// 画像繰り返し
+        /// </summary>
+        /// <param name="width">幅</param>
+        /// <param name="height">高さ</param>
+        /// <param name="srcImage">元画像</param>
+        public static SKBitmap RepeatImage(int width, int height, SKBitmap srcImage)
+        {
+            SKBitmap bmp = NewCreateImage(width, height);
+            using SKCanvas canvas = new SKCanvas(bmp);
+            using SKImage tileImage = SKImage.FromBitmap(srcImage);
+            int tileWidth = (int)tileImage.Width;
+            int tileHeight = (int)tileImage.Height;
+
+            for (int x = 0; x < width; x += tileWidth)
+            {
+                for (int y = 0; y < height; y += tileHeight)
+                {
+                    var dest = new SKRect(
+                        x,
+                        y,
+                        Math.Min(x + tileWidth, width),
+                        Math.Min(y + tileHeight, height));
+
+                    var src = new SKRect(
+                        0,
+                        0,
+                        dest.Width,
+                        dest.Height);
+
+                    canvas.DrawImage(tileImage, src, dest, SKSamplingOptions.Default);
+                }
+            }
+
+            return bmp;
+        }
     }
 }

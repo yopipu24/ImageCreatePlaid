@@ -71,15 +71,9 @@ namespace ImageCreatePlaid
                     colorFlg = BussinessLogic.GetRandomInt(3);
                 }
             }
-            
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    SKColor originalColor = originalBmp.GetPixel(x % model.VerticalSize1, y % model.HorizontalSize1);
-                    bmp.SetPixel(x, y, originalColor);
-                }
-            }
+
+            bmp = BussinessLogic.RepeatImage(width, height, originalBmp);
+
             return bmp;
         }
     }

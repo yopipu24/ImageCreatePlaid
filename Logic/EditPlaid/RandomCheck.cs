@@ -8,83 +8,192 @@ namespace ImageCreatePlaid
         {
             int width = bmp.Width;
             int height = bmp.Height;
-            SKBitmap originalBmp = BussinessLogic.NewCreateImage(model.VerticalSize1, model.HorizontalSize1);
-            int colorFlg = BussinessLogic.GetRandomInt(3);
+
+            int tileWidth = model.VerticalSize1;
+            int tileHeight = model.HorizontalSize1;
+
+            using SKBitmap tileBmp = BussinessLogic.NewCreateImage(tileWidth, tileHeight);
+            using SKCanvas tileCanvas = new SKCanvas(tileBmp);
+
             SKColor color0 = new SKColor(model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue, model.BaseAlpha);
             SKColor color1v = new SKColor(model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1, model.Alpha);
-            SKColor color2v = new SKColor(model.VerticalColorRed2, model.VerticalColorGreen2, model.VerticalColorBlue2, model.Alpha);
-            SKColor color1h = new SKColor(model.HorizontalColorRed1, model.HorizontalColorGreen1, model.HorizontalColorBlue1, model.Alpha);
             SKColor color2h = new SKColor(model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2, model.Alpha);
-            List<SKColor> colorLine = new List<SKColor>();
-            int lineWidth = BussinessLogic.GetRandomInt(model.VerticalSize1 / 8) + model.VerticalSize1 / 10;
-            int countFlg = BussinessLogic.GetRandomInt(model.VerticalSize1 / 3) + model.VerticalSize1 / 10;
-            for (int i = 0; i < countFlg; i++) colorLine.Add(color0);
-            countFlg += lineWidth;
-            for (int i = colorLine.Count; i < countFlg && i < model.VerticalSize1; i++) colorLine.Add(color1v);
-            countFlg += lineWidth / 2;
-            for (int i = colorLine.Count; i < countFlg && i < model.VerticalSize1; i++) colorLine.Add(color0);
-            countFlg += lineWidth;
-            for (int i = colorLine.Count; i < countFlg && i < model.VerticalSize1; i++) colorLine.Add(color1v);
-            for (int i = colorLine.Count; i < model.VerticalSize1; i++) colorLine.Add(color0);
-            var colorArray = colorLine.ToArray();
-            for (int i = 0; i < model.VerticalSize1; i++)
+
+            SKColor color1Cross = BussinessLogic.CalcColor2(color1v);
+
+            tileCanvas.Clear(color0);
+
+            bool[] line1X = CreateLinePattern(
+                tileWidth,
+                BussinessLogic.GetRandomInt(model.VerticalSize1 / 8) + model.VerticalSize1 / 10,
+                BussinessLogic.GetRandomInt(model.VerticalSize1 / 3) + model.VerticalSize1 / 10,
+                true);
+
+            bool[] line1Y = CreateLinePattern(
+                tileHeight,
+                BussinessLogic.GetRandomInt(model.VerticalSize1 / 8) + model.VerticalSize1 / 10,
+                BussinessLogic.GetRandomInt(model.VerticalSize1 / 3) + model.VerticalSize1 / 10,
+                true);
+
+            using var paint = new SKPaint
             {
-                for (int j = 0; j < model.HorizontalSize1; j++)
-                {
-                    if (colorArray[i] == color1v && colorArray[j] == color1v)
-                    {
-                        originalBmp.SetPixel(i, j, BussinessLogic.CalcColor2(color1v));
-                    }
-                    else if (colorArray[i] == color1v || colorArray[j] == color1v)
-                    {
-                        originalBmp.SetPixel(i, j, color1v);
-                    }
-                    else
-                    {
-                        originalBmp.SetPixel(i, j, color0);
-                    }
-                }
+                Style = SKPaintStyle.Fill,
+                IsAntialias = false
+            };
+
+            paint.Color = color1v;
+
+            DrawVerticalRuns(tileCanvas, line1X, 0, tileHeight, paint);
+            DrawHorizontalRuns(tileCanvas, line1Y, 0, tileWidth, paint);
+
+            paint.Color = color1Cross;
+            DrawCrossRuns(tileCanvas, line1X, line1Y, paint);
+
+            bool drawSecondLine = BussinessLogic.GetRandomInt(50) > 40;
+
+            bool[] line2X = CreateLinePattern2(
+                tileWidth,
+                BussinessLogic.GetRandomInt(model.VerticalSize1 / 10) + 5,
+                BussinessLogic.GetRandomInt(model.VerticalSize1 / 5),
+                drawSecondLine);
+
+            bool[] line2Y = CreateLinePattern2(
+                tileHeight,
+                BussinessLogic.GetRandomInt(model.VerticalSize1 / 10) + 5,
+                BussinessLogic.GetRandomInt(model.VerticalSize1 / 5),
+                drawSecondLine);
+
+            paint.Color = color2h;
+
+            DrawVerticalRuns(tileCanvas, line2X, 0, tileHeight, paint);
+            DrawHorizontalRuns(tileCanvas, line2Y, 0, tileWidth, paint);
+
+            bmp = BussinessLogic.RepeatImage(width, height, tileBmp);
+
+            return bmp;
+        }
+
+        private static bool[] CreateLinePattern(int length, int lineWidth, int startCount, bool repeatSecondLine)
+        {
+            bool[] pattern = new bool[length];
+
+            int pos = Math.Min(startCount, length);
+
+            FillPattern(pattern, pos, lineWidth, true);
+            pos += lineWidth;
+
+            pos += lineWidth / 2;
+
+            if (repeatSecondLine)
+            {
+                FillPattern(pattern, pos, lineWidth, true);
             }
 
-            colorLine.Clear();
-            lineWidth = BussinessLogic.GetRandomInt(model.VerticalSize1 / 10) + 5;
-            countFlg = BussinessLogic.GetRandomInt(model.VerticalSize1 / 5);
-            for (int i = 0; i < countFlg; i++) colorLine.Add(color0);
-            countFlg += lineWidth;
-            for (int i = colorLine.Count; i < countFlg && i < model.HorizontalSize1; i++) colorLine.Add(color2h);
-            countFlg += lineWidth / 2;
-            for (int i = colorLine.Count; i < countFlg && i < model.HorizontalSize1; i++) colorLine.Add(color0);
-            countFlg += lineWidth;
-            if(BussinessLogic.GetRandomInt(50) > 40)
+            return pattern;
+        }
+
+        private static bool[] CreateLinePattern2(int length, int lineWidth, int startCount, bool repeatSecondLine)
+        {
+            bool[] pattern = new bool[length];
+
+            int pos = Math.Min(startCount, length);
+
+            FillPattern(pattern, pos, lineWidth, true);
+            pos += lineWidth;
+
+            pos += lineWidth / 2;
+
+            if (repeatSecondLine)
             {
-                for (int i = colorLine.Count; i < countFlg && i < model.HorizontalSize1; i++) colorLine.Add(color2h);
+                FillPattern(pattern, pos, lineWidth, true);
             }
-            for (int i = colorLine.Count; i < model.HorizontalSize1; i++) colorLine.Add(color0);
-            colorArray = colorLine.ToArray();
-            for (int j = 0; j < model.HorizontalSize1; j++)
+
+            return pattern;
+        }
+
+        private static void FillPattern(bool[] pattern, int start, int width, bool value)
+        {
+            int end = Math.Min(start + width, pattern.Length);
+
+            for (int i = start; i < end; i++)
             {
-                for (int i = 0; i < model.VerticalSize1; i++)
+                pattern[i] = value;
+            }
+        }
+
+        private static void DrawVerticalRuns(SKCanvas canvas, bool[] pattern, int top, int height, SKPaint paint)
+        {
+            for (int x = 0; x < pattern.Length; x++)
+            {
+                if (!pattern[x])
                 {
-                    if (colorArray[i] == color2h && colorArray[j] == color2h)
+                    continue;
+                }
+
+                int start = x;
+
+                while (x < pattern.Length && pattern[x])
+                {
+                    x++;
+                }
+
+                canvas.DrawRect(start, top, x - start, height, paint);
+            }
+        }
+
+        private static void DrawHorizontalRuns(SKCanvas canvas, bool[] pattern, int left, int width, SKPaint paint)
+        {
+            for (int y = 0; y < pattern.Length; y++)
+            {
+                if (!pattern[y])
+                {
+                    continue;
+                }
+
+                int start = y;
+
+                while (y < pattern.Length && pattern[y])
+                {
+                    y++;
+                }
+
+                canvas.DrawRect(left, start, width, y - start, paint);
+            }
+        }
+
+        private static void DrawCrossRuns(SKCanvas canvas, bool[] patternX, bool[] patternY, SKPaint paint)
+        {
+            for (int x = 0; x < patternX.Length; x++)
+            {
+                if (!patternX[x])
+                {
+                    continue;
+                }
+
+                int startX = x;
+
+                while (x < patternX.Length && patternX[x])
+                {
+                    x++;
+                }
+
+                for (int y = 0; y < patternY.Length; y++)
+                {
+                    if (!patternY[y])
                     {
-                        originalBmp.SetPixel(i, j, color2h);
+                        continue;
                     }
-                    else if (colorArray[i] == color2h || colorArray[j] == color2h)
+
+                    int startY = y;
+
+                    while (y < patternY.Length && patternY[y])
                     {
-                        originalBmp.SetPixel(i, j, color2h);
+                        y++;
                     }
+
+                    canvas.DrawRect(startX, startY, x - startX, y - startY, paint);
                 }
             }
-            
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    SKColor originalColor = originalBmp.GetPixel(x % model.VerticalSize1, y % model.HorizontalSize1);
-                    bmp.SetPixel(x, y, originalColor);
-                }
-            }
-            return bmp;
         }
     }
 }
