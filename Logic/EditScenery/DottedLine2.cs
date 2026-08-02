@@ -25,32 +25,36 @@ namespace ImageCreatePlaid
             int[] hlines = BussinessLogic.GetDotPattern(model.VerticalDottedPattern, model.HorizontalSize1);
             int[] vlines = BussinessLogic.GetDotPattern(model.HorizontalDottedPattern, model.VerticalSize1);
 
-            for (int x = 0; x < width; x++)
+            SKBitmap originalBmp = BussinessLogic.NewCreateImage(model.VerticalSize1 * model.BaseBalance, model.HorizontalSize1 * model.BaseBalance);
+
+            for (int x = 0; x < originalBmp.Width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < originalBmp.Height; y++)
                 {
                     if (x % model.HorizontalSize1 > px2 - model.HorizontalSize1 / 100 - model.HorizontalDottedWeight && x % model.HorizontalSize1 < px2 + model.HorizontalSize1 / 100 + model.HorizontalDottedWeight && vlines[y % model.VerticalSize1] == 1)
                     {
-                        bmp.SetPixel(x, y, h2color);
+                        originalBmp.SetPixel(x, y, h2color);
                     }
                     else if (y % model.VerticalSize1 > py2 - model.VerticalSize1 / 100 - model.VerticalDottedWeight && y % model.VerticalSize1 < py2 + model.VerticalSize1 / 100 + model.VerticalDottedWeight && hlines[x % model.HorizontalSize1] == 1)
                     {
-                        bmp.SetPixel(x, y, v2color);
+                        originalBmp.SetPixel(x, y, v2color);
                     }
                     else if (x % model.HorizontalSize1 > px - model.HorizontalSize1 / 100 - model.HorizontalDottedWeight && x % model.HorizontalSize1 < px + model.HorizontalSize1 / 100 + model.HorizontalDottedWeight && vlines[y % model.VerticalSize1] == 1)
                     {
-                        bmp.SetPixel(x, y, h1color);
+                        originalBmp.SetPixel(x, y, h1color);
                     }
                     else if (y % model.VerticalSize1 > py - model.VerticalSize1 / 100 - model.VerticalDottedWeight && y % model.VerticalSize1 < py + model.VerticalSize1 / 100 + model.VerticalDottedWeight && hlines[x % model.HorizontalSize1] == 1)
                     {
-                        bmp.SetPixel(x, y, v1color);
+                        originalBmp.SetPixel(x, y, v1color);
                     }
                     else
                     {
-                        bmp.SetPixel(x, y, basecolor);
+                        originalBmp.SetPixel(x, y, basecolor);
                     }
                 }
             }
+
+            bmp = BussinessLogic.RepeatImage(width, height, originalBmp);
 
             return bmp;
         }

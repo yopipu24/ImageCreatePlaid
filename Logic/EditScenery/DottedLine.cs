@@ -15,10 +15,12 @@ namespace ImageCreatePlaid
 
             int[] hlines = BussinessLogic.GetDotPattern(model.VerticalDottedPattern, model.HorizontalSize1);
             int[] vlines = BussinessLogic.GetDotPattern(model.HorizontalDottedPattern, model.VerticalSize1);
+            
+            SKBitmap originalBmp = BussinessLogic.NewCreateImage(model.VerticalSize1 * model.BaseBalance, model.HorizontalSize1 * model.BaseBalance);
 
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < originalBmp.Width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < originalBmp.Height; y++)
                 {
                     SKColor color = new SKColor(model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue, model.BaseAlpha);
                     if ((x % model.HorizontalSize1 > px - model.HorizontalSize1 / 100 - model.HorizontalDottedWeight && x % model.HorizontalSize1 < px + model.HorizontalSize1 / 100 + model.HorizontalDottedWeight) && vlines[y % model.VerticalSize1] == 1)
@@ -31,9 +33,11 @@ namespace ImageCreatePlaid
                         color = new SKColor(model.VerticalColorRed1, model.VerticalColorGreen1, model.VerticalColorBlue1, model.Alpha);
                     }
 
-                    bmp.SetPixel(x, y, color);
+                    originalBmp.SetPixel(x, y, color);
                 }
             }
+
+            bmp = BussinessLogic.RepeatImage(width, height, originalBmp);
 
             return bmp;
         }
