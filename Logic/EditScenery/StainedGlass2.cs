@@ -1,10 +1,8 @@
 ﻿using SkiaSharp;
-using System.Drawing;
-using static MudBlazor.Colors;
 
 namespace ImageCreatePlaid
 {
-    public class StainedGlass : SceneryInterface
+    public class StainedGlass2 : SceneryInterface
     {
         private static readonly Random Rand = new Random();
 
@@ -66,9 +64,25 @@ namespace ImageCreatePlaid
                     {
                         StainedCellModel cell = FindNearestCell(x, y, grid, GridSize);
 
-                        byte r = (byte)(cell.BaseColor.Red * cell.BaseValue);
-                        byte g = (byte)(cell.BaseColor.Green * cell.BaseValue);
-                        byte b = (byte)(cell.BaseColor.Blue * cell.BaseValue);
+                        // 光計算
+                        double value = cell.BaseValue;
+
+                        // セル中心Glow
+                        double dx = x - cell.X;
+                        double dy = y - cell.Y;
+
+                        double glow = Math.Max(0.0, 1.0 - (dx * dx + dy * dy) / 2500.0);
+
+                        value *= 0.8 + glow * 0.3;
+
+                        // 左上からの光
+                        double directional = 1.0 - ((double)x / width + (double)y / height) * 0.5;
+                        value *= 0.75 + directional * 0.45;
+                        value = Math.Clamp(value, 0, 1);
+
+                        byte r = (byte)(cell.BaseColor.Red * value);
+                        byte g = (byte)(cell.BaseColor.Green * value);
+                        byte b = (byte)(cell.BaseColor.Blue * value);
 
                         pixels[row + x] =
                             0xFF000000u |
@@ -80,6 +94,29 @@ namespace ImageCreatePlaid
             }
 
             return bmp;
+        }
+
+        private static SKColor FromHSV(double hue, double saturation, double value)
+        {
+            int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
+            double f = hue / 60 - Math.Floor(hue / 60);
+
+            value *= 255;
+
+            byte v = ClampToByte(value);
+            byte p = ClampToByte(value * (1 - saturation));
+            byte q = ClampToByte(value * (1 - f * saturation));
+            byte t = ClampToByte(value * (1 - (1 - f) * saturation));
+
+            return hi switch
+            {
+                0 => new SKColor(v, t, p, 255),
+                1 => new SKColor(q, v, p, 255),
+                2 => new SKColor(p, v, t, 255),
+                3 => new SKColor(p, q, v, 255),
+                4 => new SKColor(t, p, v, 255),
+                _ => new SKColor(v, p, q, 255),
+            };
         }
 
         private static StainedCellModel FindNearestCell(int x, int y, List<StainedCellModel>[,] grid, int gridSize)
@@ -116,32 +153,18 @@ namespace ImageCreatePlaid
             return nearest;
         }
 
-        private static SKColor FromHSV(double hue, double saturation, double value)
-        {
-            int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
-            double f = hue / 60 - Math.Floor(hue / 60);
-
-            value *= 255;
-
-            byte v = ClampToByte(value);
-            byte p = ClampToByte(value * (1 - saturation));
-            byte q = ClampToByte(value * (1 - f * saturation));
-            byte t = ClampToByte(value * (1 - (1 - f) * saturation));
-
-            return hi switch
-            {
-                0 => new SKColor(v, t, p, 255),
-                1 => new SKColor(q, v, p, 255),
-                2 => new SKColor(p, v, t, 255),
-                3 => new SKColor(p, q, v, 255),
-                4 => new SKColor(t, p, v, 255),
-                _ => new SKColor(v, p, q, 255),
-            };
-        }
-
         private static byte ClampToByte(double value)
         {
             return (byte)Math.Max(0, Math.Min(255, value));
+        }
+
+        private static double Beam(int x, int y, double centerX, double strength)
+        {
+            // 左上→右下方向へ伸びる光
+            double dx = x - centerX + y * 0.35;
+
+            return strength *
+                   Math.Exp(-(dx * dx) / 14000.0);
         }
     }
 }

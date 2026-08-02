@@ -406,7 +406,7 @@ else
         }
 
         //背景選択リスト
-        var kindLists = new string[] { "RandomShape", "RandomShape2", "RandomShapeMusic", "RandomStarrySky", "RandomStarrySky2", "DottedLine", "DottedLine2", "DottedLineRandom", "StepCircle", "StepSquare", "StainedGlass", "None" };
+        var kindLists = new string[] { "RandomShape", "RandomShape2", "RandomShapeMusic", "RandomStarrySky", "RandomStarrySky2", "DottedLine", "DottedLine2", "DottedLineRandom", "StepCircle", "StepSquare", "StainedGlass", "StainedGlass2", "None" };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
 
@@ -526,7 +526,7 @@ else
             enableBlock = true;
             enabledShapeCount = false;
             enabledStarCount = false;
-            if (selectKind == "StainedGlass")
+            if (selectKind.Contains("StainedGlass"))
             {
                 enabledStainedGlass = true;
                 enabledDotted = false;
