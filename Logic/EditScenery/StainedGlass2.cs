@@ -90,7 +90,7 @@ namespace ImageCreatePlaid
                             ((uint)g << 8) |
                             r;
                     }
-                });
+                };
             }
 
             return bmp;
