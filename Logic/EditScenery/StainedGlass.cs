@@ -55,10 +55,16 @@ namespace ImageCreatePlaid
                 grid[gx, gy].Add(cell);
             }
 
+            ParallelOptions options = new()
+            {
+                MaxDegreeOfParallelism =
+                Math.Max(1, Environment.ProcessorCount - 1)
+            };
+
             unsafe
             {
                 uint* pixels = (uint*)bmp.GetPixels().ToPointer();
-                for (int y = 0; y < height; y++)
+                Parallel.For(0, height, options, y =>
                 {
                     int row = y * width;
 
@@ -76,7 +82,7 @@ namespace ImageCreatePlaid
                             ((uint)g << 8) |
                             r;
                     }
-                };
+                });
             }
 
             return bmp;

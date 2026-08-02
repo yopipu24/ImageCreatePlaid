@@ -53,10 +53,16 @@ namespace ImageCreatePlaid
                 grid[gx, gy].Add(cell);
             }
 
+            ParallelOptions options = new()
+            {
+                MaxDegreeOfParallelism =
+                Math.Max(1, Environment.ProcessorCount - 1)
+            };
+
             unsafe
             {
                 uint* pixels = (uint*)bmp.GetPixels().ToPointer();
-                for (int y = 0; y < height; y++)
+                Parallel.For(0, height, options, y =>
                 {
                     int row = y * width;
 
@@ -78,6 +84,7 @@ namespace ImageCreatePlaid
                         // 左上からの光
                         double directional = 1.0 - ((double)x / width + (double)y / height) * 0.5;
                         value *= 0.75 + directional * 0.45;
+
                         value = Math.Clamp(value, 0, 1);
 
                         byte r = (byte)(cell.BaseColor.Red * value);
@@ -90,7 +97,7 @@ namespace ImageCreatePlaid
                             ((uint)g << 8) |
                             r;
                     }
-                };
+                });
             }
 
             return bmp;
