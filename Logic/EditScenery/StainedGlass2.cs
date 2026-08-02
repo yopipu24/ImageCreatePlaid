@@ -56,7 +56,7 @@ namespace ImageCreatePlaid
             unsafe
             {
                 uint* pixels = (uint*)bmp.GetPixels().ToPointer();
-                Parallel.For(0, height, y =>
+                for (int y = 0; y < height; y++)
                 {
                     int row = y * width;
 
