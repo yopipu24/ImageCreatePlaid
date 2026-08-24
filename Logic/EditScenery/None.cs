@@ -8,14 +8,13 @@ namespace ImageCreatePlaid
         {
             int width = bmp.Width;
             int height = bmp.Height;
-            for (int x = 0; x < width; x++)
+            
+            SKColor color = new SKColor(model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue, model.BaseAlpha);
+            using (SKCanvas canvas = new SKCanvas(bmp))
             {
-                for (int y = 0; y < height; y++)
-                {
-                    SKColor color = new SKColor(model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue, model.BaseAlpha);
-                    bmp.SetPixel(x, y, color);
-                }
+                canvas.Clear(color);
             }
+
             return bmp;
         }
     }
