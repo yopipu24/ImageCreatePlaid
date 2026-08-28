@@ -79,102 +79,45 @@ else
             <div class="row">
                 <p></p>
             </div>
-            <div class="row color1">
-                <div class="col-sm-3" style="padding-top:5px;">
+            <div class="row">
+                <div class="col-sm-1" style="padding-top:5px;">
                     色1：
                 </div>
-                <div class="col-sm-3" style="padding-top:3px;">
+                <div class="col-sm-2" style="padding-top:3px;">
                     <input class="form-control form-control-sm" type="text" value="@color1" @onchange="OnChangeColor1" maxlength="6" />
                 </div>
-                <div class="col-sm-3">
-                    <button type="button" class="btn btn-light" @onclick="OnColor1SelectArea">
-                        色1選択
-                    </button>
-                </div>
+                <input type="color" class="col-sm-3" style="margin-top:4px;" @bind="bgcolor1" @oninput="OnChangeBgColor1" />
             </div>
-            @if (@color1select)
-            {
-                <div class="row border color1">
-                    <div class="col-sm-3">
-                        <MudSlider Style="color:red;" @bind-value="@color1redvalue" Min="0" Max="255" @onchange="OnColor1Changed">Red:@color1redvalue</MudSlider>
-                    </div>
-                    <div class="col-sm-3">
-                        <MudSlider Style="color:green;" @bind-Value="@color1greenvalue" Min="0" Max="255" @onchange="OnColor1Changed">Green:@color1greenvalue</MudSlider>
-                    </div>
-                    <div class="col-sm-3">
-                        <MudSlider Style="color:blue;" @bind-Value="@color1bluevalue" Min="0" Max="255" @onchange="OnColor1Changed">Blue:@color1bluevalue</MudSlider>
-                    </div>
-                </div>
-            }
             <div class="row">
                 <p></p>
             </div>
-            <div class="row color2">
-                <div class="col-sm-3" style="padding-top:5px;">
+            <div class="row">
+                <div class="col-sm-1" style="padding-top:5px;">
                     色2：
                 </div>
-                <div class="col-sm-3" style="padding-top:3px;">
+                <div class="col-sm-2" style="padding-top:3px;">
                     <input class="form-control form-control-sm" type="text" value="@color2" @onchange="OnChangeColor2" maxlength="6" />
                 </div>
-                <div class="col-sm-3">
-                    <button type="button" class="btn btn-light" @onclick="OnColor2SelectArea">
-                        色2選択
-                    </button>
-                </div>
+                <input type="color" class="col-sm-3" style="margin-top:4px;" @bind="bgcolor2" @oninput="OnChangeBgColor2" />
             </div>
-            @if (@color2select)
-            {
-                <div class="row border color2">
-                    <div class="col-sm-3">
-                        <MudSlider Style="color:red;" @bind-Value="@color2redvalue" Min="0" Max="255" @onchange="OnColor2Changed">Red:@color2redvalue</MudSlider>
-                    </div>
-                    <div class="col-sm-3">
-                        <MudSlider Style="color:green;" @bind-Value="@color2greenvalue" Min="0" Max="255" @onchange="OnColor2Changed">Green:@color2greenvalue</MudSlider>
-                    </div>
-                    <div class="col-sm-3">
-                        <MudSlider Style="color:blue;" @bind-Value="@color2bluevalue" Min="0" Max="255" @onchange="OnColor2Changed">Blue:@color2bluevalue</MudSlider>
-                    </div>
-                </div>
-            }
             <div class="row">
                 <p></p>
             </div>
-            <div class="row basecolor">
-                <div class="col-sm-3" style="padding-top:5px;">
+            <div class="row">
+                <div class="col-sm-1" style="padding-top:5px;">
                     ベース色:
                 </div>
-                <div class="col-sm-3" style="padding-top:3px;">
+                <div class="col-sm-2" style="padding-top:3px;">
                     <input class="form-control form-control-sm" type="text" value="@basecolor" @onchange="OnChangeBaseColor" maxlength="6" disabled="@checkalpha" />
                 </div>
+                <input type="color" class="col-sm-3" style="margin-top:4px;" @bind="bgbasecolor" @oninput="OnChangeBgBaseColor" disabled="@checkalpha" />
                 <div class="col-sm-4">
-                    <button type="button" class="btn btn-light" @onclick="OnBaseColorSelectArea">
-                        ベース色選択
-                    </button>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-check form-switch">
+                    <div class="form-check form-switch" style="margin-top:4px;">
                         <input class="form-check-input" type="checkbox" id="alpha" @bind-value="@checkalpha" />
                         <label class="form-check-label" for="alpha">ベース色透明</label>
                     </div>
                 </div>
             </div>
-            @if (@basecolorselect)
-            {
-                <div class="row border basecolor">
-                    <div class="col-sm-3">
-                        <MudSlider Style="color:red;" @bind-Value="@basecolorredvalue" Min="0" Max="255" @onchange="OnBaseColorChanged">Red:@basecolorredvalue</MudSlider>
-                    </div>
-                    <div class="col-sm-3">
-                        <MudSlider Style="color:green;" @bind-Value="@basecolorgreenvalue" Min="0" Max="255" @onchange="OnBaseColorChanged">Green:@basecolorgreenvalue</MudSlider>
-                    </div>
-                    <div class="col-sm-3">
-                        <MudSlider Style="color:blue;" @bind-Value="@basecolorbluevalue" Min="0" Max="255" @onchange="OnBaseColorChanged">Blue:@basecolorbluevalue</MudSlider>
-                    </div>
-                </div>
-                <div class="row">
-                    <p></p>
-                </div>
-            }
             <div class="row">
                 <p></p>
             </div>
@@ -338,12 +281,12 @@ else
     private string selectId = string.Empty;
     private List<string> kindList = new List<string>();
     private string selectKind = string.Empty;
-    private string color1 = "FFFFFF";
-    private string color2 = "FFFFFF";
-    private string basecolor = "FFFFFF";
-    private string bgcolor1 = "#FFFFFF";
-    private string bgcolor2 = "#FFFFFF";
-    private string bgbasecolor = "#FFFFFF";
+    private string color1 = "ffffff";
+    private string color2 = "ffffff";
+    private string basecolor = "ffffff";
+    private string bgcolor1 = "#ffffff";
+    private string bgcolor2 = "#ffffff";
+    private string bgbasecolor = "#ffffff";
     private string scenerysize = "200";
     private bool color1select = false;
     private int color1redvalue = 255;
@@ -630,6 +573,42 @@ else
             }
 
             validateImageButton();
+        }
+    }
+
+    private void OnChangeBgColor1(ChangeEventArgs e)
+    {
+        if (e.Value == null)
+        {
+            return;
+        }
+        else
+        {
+            color1 = e.Value.ToString().Substring(1);
+        }
+    }
+
+    private void OnChangeBgColor2(ChangeEventArgs e)
+    {
+        if (e.Value == null)
+        {
+            return;
+        }
+        else
+        {
+            color2 = e.Value.ToString().Substring(1);
+        }
+    }
+
+    private void OnChangeBgBaseColor(ChangeEventArgs e)
+    {
+        if (e.Value == null)
+        {
+            return;
+        }
+        else
+        {
+            basecolor = e.Value.ToString().Substring(1);
         }
     }
 
