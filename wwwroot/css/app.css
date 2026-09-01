@@ -112,3 +112,89 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+.sample-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.sample-card {
+    position: relative;
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: #eee;
+    cursor: pointer;
+}
+
+    .sample-card img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        transition: transform .2s ease;
+    }
+
+    .sample-card:hover img {
+        transform: scale(1.05);
+    }
+
+.sample-card__label {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 8px 10px;
+    color: white;
+    background: linear-gradient(transparent, rgba(0, 0, 0, .78));
+    text-align: left;
+    font-size: .9rem;
+}
+
+.sample-modal-backdrop {
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgb(0 0 0 / 70%);
+}
+
+.sample-modal {
+    position: relative;
+    max-width: min(900px, 100%);
+    max-height: 90vh;
+    padding: 16px;
+    border-radius: 12px;
+    background: white;
+}
+
+    .sample-modal img {
+        display: block;
+        max-width: 100%;
+        max-height: calc(90vh - 90px);
+        object-fit: contain;
+    }
+
+    .sample-modal p {
+        margin: 10px 0 0;
+    }
+
+.sample-modal__close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    color: white;
+    background: #333;
+    font-size: 24px;
+    cursor: pointer;
+}

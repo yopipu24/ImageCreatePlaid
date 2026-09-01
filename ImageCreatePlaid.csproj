@@ -16,4 +16,8 @@
     <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" Version="4.150.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\img\" />
+  </ItemGroup>
+
 </Project>
