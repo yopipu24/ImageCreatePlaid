@@ -217,12 +217,29 @@ namespace ImageCreatePlaid
         /// イメージ編集（背景）
         /// </summary>
         /// <param name="bmp">Bitmap</param>
-        /// <param name="model">チェック柄モデル</param>
+        /// <param name="model">背景モデル</param>
         /// <returns></returns>
         public static SKBitmap EditImage(SKBitmap bmp, SceneryModel model)
         {
             //背景のパターン毎に処理呼び出し
             Type t = Type.GetType("ImageCreatePlaid." + model.KindScenery);
+            object o = t.InvokeMember(null, BindingFlags.CreateInstance, null, null, null);
+            object result = t.InvokeMember("EditImage", BindingFlags.InvokeMethod, null, o, new object[] { bmp, model });
+            bmp = (SKBitmap)result;
+
+            return bmp;
+        }
+
+        /// <summary>
+        /// イメージ編集（枠）
+        /// </summary>
+        /// <param name="bmp">Bitmap</param>
+        /// <param name="model">枠モデル</param>
+        /// <returns></returns>
+        public static SKBitmap EditImage(SKBitmap bmp, FrameModel model)
+        {
+            //背景のパターン毎に処理呼び出し
+            Type t = Type.GetType("ImageCreatePlaid." + model.KindFrame);
             object o = t.InvokeMember(null, BindingFlags.CreateInstance, null, null, null);
             object result = t.InvokeMember("EditImage", BindingFlags.InvokeMethod, null, o, new object[] { bmp, model });
             bmp = (SKBitmap)result;
