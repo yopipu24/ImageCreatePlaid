@@ -83,5 +83,13 @@
         public int LargeStarCount { get; set; }
         public int SmallStarCount { get; set; }
         public int SparkleCount { get; set; }
+
+        /// <summary>
+        /// 雪用
+        /// </summary>
+        public int CrystalCount { get; set; }
+        public int SnowMinSize { get; set; }
+        public int SnowMaxSize { get; set; }
+        public float SnowMargin { get; set; }
     }
 }

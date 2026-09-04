@@ -80,7 +80,7 @@ else
                 <p></p>
             </div>
             <div class="row">
-                <div class="col-sm-1" style="padding-top:5px;">
+                <div class="col-sm-2" style="padding-top:5px;">
                     色1：
                 </div>
                 <div class="col-sm-2" style="padding-top:3px;">
@@ -92,7 +92,7 @@ else
                 <p></p>
             </div>
             <div class="row">
-                <div class="col-sm-1" style="padding-top:5px;">
+                <div class="col-sm-2" style="padding-top:5px;">
                     色2：
                 </div>
                 <div class="col-sm-2" style="padding-top:3px;">
@@ -104,7 +104,7 @@ else
                 <p></p>
             </div>
             <div class="row">
-                <div class="col-sm-1" style="padding-top:5px;">
+                <div class="col-sm-2" style="padding-top:5px;">
                     ベース色:
                 </div>
                 <div class="col-sm-2" style="padding-top:3px;">
@@ -224,6 +224,29 @@ else
                 </div>
             </div>
         }
+        @if (enabledSnowCrystal)
+        {
+            <div class="row border">
+                <div class="col-sm-5">
+                    <MudSlider @bind-Value="@crystalCount" Min="10" Max="500">結晶の数:@crystalCount</MudSlider>
+                </div>
+            </div>
+            <div class="row border">
+                <div class="col-sm-5">
+                    <MudSlider @bind-Value="@snowMinSize" Min="16" Max="200" @onchange="OnChangeSnowSize">結晶の最小サイズ:@snowMinSize</MudSlider>
+                </div>
+            </div>
+            <div class="row border">
+                <div class="col-sm-5">
+                    <MudSlider @bind-Value="@snowMaxSize" Min="16" Max="400" @onchange="OnChangeSnowSize">結晶の最大サイズ:@snowMaxSize</MudSlider>
+                </div>
+            </div>
+            <div class="row border">
+                <div class="col-sm-5">
+                    <MudSlider @bind-Value="@snowMargin" Min="0" Max="50">間隔:@snowMargin</MudSlider>
+                </div>
+            </div>
+        }
         <div class="row">
             <div class="col-sm-3">
                 <button class="btn btn-primary" @onclick="OnButtonClick" disabled="@validBtn">画像生成</button>
@@ -327,6 +350,11 @@ else
     private int largeStarCount = 30;
     private int smallStarCount = 250;
     private int sparkleCount = 20;
+    private bool enabledSnowCrystal = false;
+    private int crystalCount = 70;
+    private int snowMinSize = 16;
+    private int snowMaxSize = 60;
+    private float snowMargin = 10;
 
     public enum vDottedValue { one, two, three }
     public enum hDottedValue { one, two, three }
@@ -349,7 +377,7 @@ else
         }
 
         //背景選択リスト
-        var kindLists = new string[] { "RandomShape", "RandomShape2", "RandomShapeMusic", "RandomStarrySky", "RandomStarrySky2", "DottedLine", "DottedLine2", "DottedLineRandom", "StepCircle", "StepSquare", "StainedGlass", "StainedGlass2", "Puzzle", "None" };
+        var kindLists = new string[] { "RandomShape", "RandomShape2", "RandomShapeMusic", "RandomStarrySky", "RandomStarrySky2", "RandomSnowCrystal", "DottedLine", "DottedLine2", "DottedLineRandom", "StepCircle", "StepSquare", "StainedGlass", "StainedGlass2", "Puzzle", "None" };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
 
@@ -426,6 +454,11 @@ else
             model.SmallStarCount = smallStarCount;
             model.SparkleCount = sparkleCount;
 
+            model.CrystalCount = crystalCount;
+            model.SnowMinSize = snowMinSize;
+            model.SnowMaxSize = snowMaxSize;
+            model.SnowMargin = snowMargin;
+
             //イメージ作成
             bitmap = BussinessLogic.NewCreateImage(fileWidth, fileHeight);
             bitmap = BussinessLogic.EditImage(bitmap, model);
@@ -466,37 +499,33 @@ else
         else
         {
             selectKind = e.Value.ToString();
-            enableBlock = true;
+
             enabledShapeCount = false;
+            if (selectKind == "RandomShape2") { enabledShapeCount = true; }
+            if (selectKind == "RandomShapeMusic") { enabledShapeCount = true; }
+
+            enableBlock = true;
             enabledStarCount = false;
+            if (selectKind == "RandomStarrySky") { enabledStarCount = true; enableBlock = false; }
+            if (selectKind == "RandomStarrySky2") { enabledStarCount = true; enableBlock = false; }
+
+            enabledSnowCrystal = false;
+            if (selectKind == "RandomSnowCrystal") { enabledSnowCrystal = true; }
+
+            enabledStainedGlass = false;
+            enabledDotted = false;
+            enabledStep = false;
             if (selectKind.Contains("StainedGlass"))
             {
                 enabledStainedGlass = true;
-                enabledDotted = false;
-                enabledStep = false;
             }
-            else
+            else if (selectKind.Contains("Dotted"))
             {
-                enabledStainedGlass = false;
-                if (selectKind.Contains("Dotted"))
-                {
-                    enabledDotted = true;
-                    enabledStep = false;
-                }
-                else if (selectKind.Contains("Step"))
-                {
-                    enabledDotted = false;
-                    enabledStep = true;
-                }
-                else
-                {
-                    enabledDotted = false;
-                    enabledStep = false;
-                    if (selectKind == "RandomShape2") { enabledShapeCount = true;}
-                    if (selectKind == "RandomShapeMusic") { enabledShapeCount = true;}
-                    if (selectKind == "RandomStarrySky") { enabledStarCount = true; enableBlock = false; }
-                    if (selectKind == "RandomStarrySky2") { enabledStarCount = true; enableBlock = false; }
-                }
+                enabledDotted = true;
+            }
+            else if (selectKind.Contains("Step"))
+            {
+                enabledStep = true;
             }
         }
     }
@@ -622,6 +651,12 @@ else
     {
         if (e.Value == null) return;
         shapeMinSize = e.Value.ToString();
+    }
+
+    private void OnChangeSnowSize(ChangeEventArgs e)
+    {
+        if (e.Value == null) return;
+        if (snowMinSize > snowMaxSize) snowMinSize = snowMaxSize;
     }
 
     private void GetColor_Button(MouseEventArgs e)
