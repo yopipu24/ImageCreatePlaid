@@ -1,4 +1,6 @@
-﻿namespace ImageCreatePlaid
+﻿using static ImageCreatePlaid.Models.EnumModel;
+
+namespace ImageCreatePlaid
 {
     public class SceneryModel
     {
@@ -22,10 +24,11 @@
         public byte BaseAlpha { get; set; }
 
         public string StepPattern { get; set; }
-        public string StepColorPattern { get; set; }
+        public StepColorPatternValue StepColorPattern { get; set; }
 
         public float HueValue { get; set; }
         public float SaturationValue { get; set; }
+
 
         /// <summary>
         /// 縦線１
@@ -37,7 +40,7 @@
         public int VerticalSize1 { get; set; }
         public int VerticalCount1 { get; set; }
         public int VerticalDottedWeight { get; set; }
-        public string VerticalDottedPattern { get; set; }
+        public DottedValue vDottedValue { get; set; }
 
         /// <summary>
         /// 縦線２
@@ -59,7 +62,7 @@
         public int HorizontalSize1 { get; set; }
         public int HorizontalCount1 { get; set; }
         public int HorizontalDottedWeight { get; set; }
-        public string HorizontalDottedPattern { get; set; }
+        public DottedValue hDottedValue { get; set; }
 
         /// <summary>
         /// 横線２

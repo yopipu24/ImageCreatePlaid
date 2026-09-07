@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using static ImageCreatePlaid.Models.EnumModel;
 
 namespace ImageCreatePlaid
 {
@@ -9,7 +10,7 @@ namespace ImageCreatePlaid
             int width = bmp.Width;
             int height = bmp.Height;
 
-            string frameType = model.FrameType.ToString();
+            FramePatternValue frameType = model.FramePatternValue;
             int frameSize = model.FrameSize;
 
             SKColor baseColor = new SKColor(model.BaseColorRed, model.BaseColorGreen, model.BaseColorBlue, model.BaseAlpha);
@@ -20,13 +21,13 @@ namespace ImageCreatePlaid
                 canvas.Clear(baseColor); 
                 using (SKPaint paint = new SKPaint { Color = color1 })
                 {
-                    if (frameType == "topbottom")
+                    if (frameType == FramePatternValue.topbottom)
                     {
                         // 上下の枠
                         canvas.DrawRect(0, 0, width, frameSize, paint);
                         canvas.DrawRect(0, height - frameSize, width, frameSize, paint);
                     }
-                    else if (frameType == "all")
+                    else if (frameType == FramePatternValue.all)
                     {
                         canvas.DrawRect(0, 0, width, frameSize, paint);
                         canvas.DrawRect(0, height - frameSize, width, frameSize, paint);

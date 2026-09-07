@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using static ImageCreatePlaid.Models.EnumModel;
 
 namespace ImageCreatePlaid
 {
@@ -66,7 +67,7 @@ namespace ImageCreatePlaid
                     {
                         circleSize = model.HorizontalSize1 * x / wStepCount;
 
-                        if (model.StepColorPattern == "two")
+                        if (model.StepColorPattern == StepColorPatternValue.two)
                         {
                             currentColor = x % 2 == 0 ? h1Color : h2Color;
                         }
@@ -75,7 +76,7 @@ namespace ImageCreatePlaid
                     {
                         circleSize = model.VerticalSize1 * y / hStepCount;
 
-                        if (model.StepColorPattern == "two")
+                        if (model.StepColorPattern == StepColorPatternValue.two)
                         {
                             currentColor = y % 2 == 0 ? v1Color : v2Color;
                         }
@@ -84,14 +85,14 @@ namespace ImageCreatePlaid
                     {
                         circleSize = model.HorizontalSize1 * x / wStepCount * y / hStepCount;
 
-                        if (model.StepColorPattern == "two")
+                        if (model.StepColorPattern == StepColorPatternValue.two)
                         {
                             currentColor = useFirstColor ? h1Color : h2Color;
                             useFirstColor = !useFirstColor;
                         }
                     }
 
-                    if (model.StepColorPattern == "alt")
+                    if (model.StepColorPattern == StepColorPatternValue.alt)
                     {
                         if ((x % 2 == 0 && y % 2 == 0) || (x % 2 == 1 && y % 2 == 1))
                         {

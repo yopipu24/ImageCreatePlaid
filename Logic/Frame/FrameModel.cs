@@ -1,4 +1,5 @@
-﻿using static ImageCreatePlaid.Pages.CreateFrame;
+﻿using static ImageCreatePlaid.Models.EnumModel;
+using static ImageCreatePlaid.Pages.CreateFrame;
 
 namespace ImageCreatePlaid
 {
@@ -24,7 +25,8 @@ namespace ImageCreatePlaid
 
         public int FrameSize { get; set; }
         public int RepeatSize { get; set; }
-        public FramePatternValue FrameType { get; set; }
+        public FramePatternValue FramePatternValue { get; set; }
+        public FramePatternType FramePatternType { get; set; }
 
         /// <summary>
         /// 色１

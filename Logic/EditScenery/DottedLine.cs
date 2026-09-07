@@ -13,8 +13,8 @@ namespace ImageCreatePlaid
             int px = (int)Math.Truncate(pointx);
             int py = (int)Math.Truncate(pointy);
 
-            int[] hlines = BussinessLogic.GetDotPattern(model.VerticalDottedPattern, model.HorizontalSize1);
-            int[] vlines = BussinessLogic.GetDotPattern(model.HorizontalDottedPattern, model.VerticalSize1);
+            int[] hlines = BussinessLogic.GetDotPattern(model.vDottedValue, model.HorizontalSize1);
+            int[] vlines = BussinessLogic.GetDotPattern(model.hDottedValue, model.VerticalSize1);
             
             SKBitmap originalBmp = BussinessLogic.NewCreateImage(model.VerticalSize1 * model.BaseBalance, model.HorizontalSize1 * model.BaseBalance);
 

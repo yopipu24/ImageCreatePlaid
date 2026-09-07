@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
 @using SkiaSharp;
+@using static ImageCreatePlaid.Models.EnumModel
 @inject HttpClient Http
 
 <PageTitle>背景作成</PageTitle>
@@ -144,7 +145,7 @@ else
                 <div class="col-sm-5">
                     <InputRadioGroup Name="hdotpattern" @bind-Value="@hDottedPattern">
                         <label>点線種類（水平）:</label>
-                        @foreach (var val in Enum.GetValues(typeof(hDottedValue)))
+                        @foreach (var val in Enum.GetValues(typeof(DottedValue)))
                         {
                             <label style="margin-left:5px;"><InputRadio Value="val" />@val</label>
                         }
@@ -153,7 +154,7 @@ else
                 <div class="col-sm-5">
                     <InputRadioGroup Name="vdotpattern" @bind-Value="@vDottedPattern">
                         <label>点線種類（垂直）:</label>
-                        @foreach (var val in Enum.GetValues(typeof(vDottedValue)))
+                        @foreach (var val in Enum.GetValues(typeof(DottedValue)))
                         {
                             <label style="margin-left:5px;"><InputRadio Value="val" />@val</label>
                         }
@@ -182,7 +183,7 @@ else
                 <div class="col-sm-5">
                     <InputRadioGroup Name="stepcolorpattern" @bind-Value="@stepColorPattern">
                         <label>色パターン:</label>
-                        @foreach (var val in Enum.GetValues(typeof(stepColorPatternValue)))
+                        @foreach (var val in Enum.GetValues(typeof(StepColorPatternValue)))
                         {
                             <label style="margin-left:5px;"><InputRadio Value="val" />@val</label>
                         }
@@ -328,11 +329,11 @@ else
     private bool enabledDotted = false;
     private int vlineWeightSize = 2;
     private int hlineWeightSize = 2;
-    private vDottedValue? vDottedPattern { get; set; } = vDottedValue.one;
-    private hDottedValue? hDottedPattern { get; set; } = hDottedValue.one;
+    private DottedValue? vDottedPattern { get; set; } = DottedValue.one;
+    private DottedValue? hDottedPattern { get; set; } = DottedValue.one;
     private bool enabledStep = false;
     private string selectStepDirection = string.Empty;
-    private stepColorPatternValue? stepColorPattern { get; set; } = stepColorPatternValue.one;
+    private StepColorPatternValue? stepColorPattern { get; set; } = StepColorPatternValue.one;
     private string str = string.Empty;
     private int fileWidth;
     private int fileHeight;
@@ -356,9 +357,6 @@ else
     private int snowMaxSize = 60;
     private float snowMargin = 10;
 
-    public enum vDottedValue { one, two, three }
-    public enum hDottedValue { one, two, three }
-    public enum stepColorPatternValue { one, two, alt }
     private string? xmlText;
 
     protected override async Task OnInitializedAsync()
@@ -438,11 +436,11 @@ else
 
             model.VerticalDottedWeight = vlineWeightSize;
             model.HorizontalDottedWeight = hlineWeightSize;
-            model.VerticalDottedPattern = vDottedPattern.Value.ToString();
-            model.HorizontalDottedPattern = hDottedPattern.Value.ToString();
+            model.vDottedValue = vDottedPattern ?? DottedValue.one;
+            model.hDottedValue = hDottedPattern ?? DottedValue.one;
 
             model.StepPattern = selectStepDirection;
-            model.StepColorPattern = stepColorPattern.Value.ToString();
+            model.StepColorPattern = stepColorPattern ?? StepColorPatternValue.one;
 
             model.HueValue = hueValue;
             model.SaturationValue = saturationValue / 100;

@@ -29,9 +29,9 @@ public class DottedLineRandom : SceneryInterface
             model.VerticalColorRed2, model.VerticalColorGreen2, model.VerticalColorBlue2, model.Alpha);
 
         int[] hlines = BussinessLogic.GetDotPattern(
-            model.VerticalDottedPattern, horizontalSize);
+            model.vDottedValue, horizontalSize);
         int[] vlines = BussinessLogic.GetDotPattern(
-            model.HorizontalDottedPattern, verticalSize);
+            model.hDottedValue, verticalSize);
 
         int horizontalRange = horizontalSize / 100 + model.HorizontalDottedWeight;
         int verticalRange = verticalSize / 100 + model.VerticalDottedWeight;

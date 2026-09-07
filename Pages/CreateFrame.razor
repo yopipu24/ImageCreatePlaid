@@ -3,6 +3,7 @@
 @using System.Globalization
 @using MudBlazor
 @using SkiaSharp;
+@using static ImageCreatePlaid.Models.EnumModel
 @inject HttpClient Http
 
 <PageTitle>枠作成</PageTitle>
@@ -129,6 +130,20 @@ else
                 </div>
             </div>
         }
+        @if (enabledFramePatternType)
+        {
+            <div class="row border">
+                <div class="col-sm-5">
+                    <InputRadioGroup Name="framePatternTypeSelect" @bind-Value="@selectedFramePatternType">
+                        <label>枠タイプ:</label>
+                        @foreach (var val in Enum.GetValues(typeof(FramePatternType)))
+                        {
+                            <label style="margin-left:5px;"><InputRadio Value="val" />@val</label>
+                        }
+                    </InputRadioGroup>
+                </div>
+            </div>
+        }
         <div class="row">
             <p></p>
         </div>
@@ -224,7 +239,9 @@ else
 
     private bool enabledFramePattern = true;
     private FramePatternValue? selectedFramePattern { get; set; } = FramePatternValue.topbottom;
-    public enum FramePatternValue { topbottom, all };
+    private bool enabledFramePatternType = false;
+    private FramePatternType? selectedFramePatternType { get; set; } = FramePatternType.Checker;
+    
 
     protected override async Task OnInitializedAsync()
     {
@@ -245,7 +262,8 @@ else
         var kindLists = new string[] {
             "NormalFrame",
             "CircleFrame",
-            "WoodFrame"
+            "WoodFrame",
+            "GeometryFrame"
     };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
@@ -277,7 +295,8 @@ else
             model.FrameSize = int.Parse(framesize);
             model.RepeatSize = int.Parse(framesize);
 
-            if (selectedFramePattern.HasValue) model.FrameType = selectedFramePattern.Value;
+            if (selectedFramePattern.HasValue) model.FramePatternValue = selectedFramePattern.Value;
+            if (selectedFramePatternType.HasValue) model.FramePatternType = selectedFramePatternType.Value;
 
             //イメージ作成
             bitmap = BussinessLogic.NewCreateImage(fileWidth, fileHeight);
@@ -317,6 +336,15 @@ else
         else
         {
             enabledFramePattern = false;
+        }
+
+        if (selectKind == "GeometryFrame")
+        {
+            enabledFramePatternType = true;
+        }
+        else
+        {
+            enabledFramePatternType = false;
         }
     }
 

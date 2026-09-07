@@ -1,6 +1,7 @@
-﻿using System.Reflection;
-using SkiaSharp;
+﻿using SkiaSharp;
+using System.Reflection;
 using System.Security.Cryptography;
+using static ImageCreatePlaid.Models.EnumModel;
 
 namespace ImageCreatePlaid
 {
@@ -153,24 +154,24 @@ namespace ImageCreatePlaid
         /// <param name="pattern">1:15分の10 2:半分</param>
         /// <param name="scale">ブロックサイズ</param>
         /// <returns></returns>
-        public static int[] GetDotPattern(string pattern, int scale)
+        public static int[] GetDotPattern(DottedValue pattern, int scale)
         {
             int[] result = new int[scale];
-            if (pattern == "one")
+            if (pattern == DottedValue.one)
             {
                 for (int i = 0; i < scale; i++)
                 {
                     if (i % 15 < 10) result[i] = 1;
                 }
             }
-            else if (pattern == "two")
+            else if (pattern == DottedValue.two)
             {
                 for (int i = 0; i < scale; i++)
                 {
                     if (i % (scale / 10) < (scale / 10 / 2)) result[i] = 1;
                 }
             }
-            else if (pattern == "three")
+            else if (pattern == DottedValue.three)
             {
                 for (int i = 0; i < scale; i++)
                 {

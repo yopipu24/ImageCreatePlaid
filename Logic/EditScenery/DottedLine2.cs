@@ -22,8 +22,8 @@ namespace ImageCreatePlaid
             SKColor h2color = new SKColor(model.HorizontalColorRed2, model.HorizontalColorGreen2, model.HorizontalColorBlue2, model.Alpha);
             SKColor v2color = new SKColor(model.VerticalColorRed2, model.VerticalColorGreen2, model.VerticalColorBlue2, model.Alpha);
 
-            int[] hlines = BussinessLogic.GetDotPattern(model.VerticalDottedPattern, model.HorizontalSize1);
-            int[] vlines = BussinessLogic.GetDotPattern(model.HorizontalDottedPattern, model.VerticalSize1);
+            int[] hlines = BussinessLogic.GetDotPattern(model.vDottedValue, model.HorizontalSize1);
+            int[] vlines = BussinessLogic.GetDotPattern(model.hDottedValue, model.VerticalSize1);
 
             SKBitmap originalBmp = BussinessLogic.NewCreateImage(model.VerticalSize1 * model.BaseBalance, model.HorizontalSize1 * model.BaseBalance);
 
