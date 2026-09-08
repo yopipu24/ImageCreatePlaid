@@ -144,6 +144,20 @@ else
                 </div>
             </div>
         }
+        @if (enabledRandomFramePattern)
+        {
+            <div class="row border">
+                <div class="col-sm-7">
+                    <InputRadioGroup Name="RandomFramePatternSelect" @bind-Value="@selectedRandomFramePattern">
+                        <label>枠タイプ:</label>
+                        @foreach (var val in Enum.GetValues(typeof(RandomFramePattern)))
+                        {
+                            <label style="margin-left:5px;"><InputRadio Value="val" />@val</label>
+                        }
+                    </InputRadioGroup>
+                </div>
+            </div>
+        }
         <div class="row">
             <p></p>
         </div>
@@ -241,7 +255,9 @@ else
     private FramePatternValue? selectedFramePattern { get; set; } = FramePatternValue.topbottom;
     private bool enabledFramePatternType = false;
     private FramePatternType? selectedFramePatternType { get; set; } = FramePatternType.Checker;
-    
+    private bool enabledRandomFramePattern = false;
+    private RandomFramePattern? selectedRandomFramePattern { get; set; } = RandomFramePattern.PolkaDot;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -263,7 +279,8 @@ else
             "NormalFrame",
             "CircleFrame",
             "WoodFrame",
-            "GeometryFrame"
+            "GeometryFrame",
+            "RandomFrame"
     };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
@@ -297,6 +314,7 @@ else
 
             if (selectedFramePattern.HasValue) model.FramePatternValue = selectedFramePattern.Value;
             if (selectedFramePatternType.HasValue) model.FramePatternType = selectedFramePatternType.Value;
+            if (selectedRandomFramePattern.HasValue) model.RandomFramePatternValue = selectedRandomFramePattern.Value;
 
             //イメージ作成
             bitmap = BussinessLogic.NewCreateImage(fileWidth, fileHeight);
@@ -345,6 +363,15 @@ else
         else
         {
             enabledFramePatternType = false;
+        }
+
+        if (selectKind == "RandomFrame")
+        {
+            enabledRandomFramePattern = true;
+        }
+        else
+        {
+            enabledRandomFramePattern = false;
         }
     }
 

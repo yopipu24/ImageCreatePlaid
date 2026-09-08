@@ -27,6 +27,7 @@ namespace ImageCreatePlaid
         public int RepeatSize { get; set; }
         public FramePatternValue FramePatternValue { get; set; }
         public FramePatternType FramePatternType { get; set; }
+        public RandomFramePattern RandomFramePatternValue { get; set; }
 
         /// <summary>
         /// 色１
