@@ -1,0 +1,92 @@
+﻿@page "/createarcana"
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<main class="arcana-card" @ref="cardElement">
+    <canvas class="arcana-canvas" @ref="canvasElement"></canvas>
+</main>
+
+<section aria-label="背景設定" style="width:min(92vw,620px);margin:16px auto;display:flex;flex-wrap:wrap;gap:8px">
+    <select value="@Number" @onchange="ChangeNumber" aria-label="番号">
+        @foreach (var card in MajorArcana)
+        {
+            <option value="@card.Number">@card.Number — @card.Name</option>
+        }
+    </select>
+    <select value="@NameSelection" @onchange="ChangeName" aria-label="名称">
+        @foreach (var card in MajorArcana)
+        {
+            <option value="@card.Name">@card.Name</option>
+        }
+        <option value="__custom__">✦ カスタム名を入力</option>
+    </select>
+    @if (IsCustomName)
+    {
+        <input value="@CustomName" @oninput="ChangeCustomName" placeholder="自由に名称を入力" aria-label="自由な名称" />
+    }
+    <button @onclick="Randomize">ランダムに再生成</button>
+    <!--<button @onclick="SavePng">画像を保存（PNG）</button>-->
+</section>
+
+@code {
+    private ElementReference canvasElement;
+    private ElementReference cardElement;
+    private IJSObjectReference? module;
+    private string Number = "XVII";
+    private string NameSelection = "THE STAR";
+    private string CustomName = "";
+    private string Salt = "0";
+    private bool IsCustomName => NameSelection == "__custom__";
+    private string Title => IsCustomName ? (string.IsNullOrWhiteSpace(CustomName) ? "CUSTOM ARCANA" : CustomName) : NameSelection;
+
+    private static readonly (string Number, string Name)[] MajorArcana =
+    {
+        ("0", "THE FOOL"), ("I", "THE MAGICIAN"), ("II", "THE HIGH PRIESTESS"), ("III", "THE EMPRESS"),
+        ("IV", "THE EMPEROR"), ("V", "THE HIEROPHANT"), ("VI", "THE LOVERS"), ("VII", "THE CHARIOT"),
+        ("VIII", "STRENGTH"), ("IX", "THE HERMIT"), ("X", "WHEEL OF FORTUNE"), ("XI", "JUSTICE"),
+        ("XII", "THE HANGED MAN"), ("XIII", "DEATH"), ("XIV", "TEMPERANCE"), ("XV", "THE DEVIL"),
+        ("XVI", "THE TOWER"), ("XVII", "THE STAR"), ("XVIII", "THE MOON"), ("XIX", "THE SUN"),
+        ("XX", "JUDGEMENT"), ("XXI", "THE WORLD")
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/createarcana.js");
+        await RenderCard();
+        await module.InvokeVoidAsync("observeResize", cardElement, canvasElement, Number, Title, Salt);
+    }
+
+    private async Task ChangeNumber(ChangeEventArgs args)
+    {
+        Number = args.Value?.ToString() ?? "0";
+        if (!IsCustomName) NameSelection = MajorArcana.First(x => x.Number == Number).Name;
+        Salt = "0";
+        await RenderCard();
+    }
+
+    private async Task ChangeName(ChangeEventArgs args)
+    {
+        NameSelection = args.Value?.ToString() ?? "THE STAR";
+        if (!IsCustomName) Number = MajorArcana.First(x => x.Name == NameSelection).Number;
+        Salt = "0";
+        await RenderCard();
+    }
+
+    private async Task ChangeCustomName(ChangeEventArgs args)
+    {
+        CustomName = args.Value?.ToString() ?? "";
+        Salt = "0";
+        await RenderCard();
+    }
+
+    private async Task Randomize() { Salt = Guid.NewGuid().ToString("N"); await RenderCard(); }
+    private async Task RenderCard() { if (module is not null) await module.InvokeVoidAsync("draw", canvasElement, Number, Title, Salt); }
+    private async Task SavePng() { if (module is not null) await module.InvokeVoidAsync("savePng", canvasElement, Number, Title); }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null) await module.DisposeAsync();
+    }
+}

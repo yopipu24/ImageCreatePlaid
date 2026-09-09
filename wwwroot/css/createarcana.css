@@ -1,0 +1,17 @@
+﻿/* カード描画専用のスタイル */
+.arcana-card {
+    width: min(92vw, 620px);
+    aspect-ratio: 2 / 3;
+    position: relative;
+    overflow: hidden;
+    margin: 30px auto 0;
+    border: 1px solid #c9a95c;
+    box-shadow: 0 0 0 7px #17122f, 0 0 60px #7050b8;
+}
+
+.arcana-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
