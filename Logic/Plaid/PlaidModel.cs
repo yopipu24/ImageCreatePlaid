@@ -60,5 +60,10 @@
         public byte HorizontalColorAlpha2 { get; set; }
         public int HorizontalSize2 { get; set; }
         public int HorizontalCount2 { get; set; }
+
+        // 窓の中のチェック柄を、ランダムにするか(true)、指定するか(false)
+        public bool WindowPatternRandom { get; set; } = true;
+        // 指定する場合のパターン名(PlaidRegistry.InnerNames のどれか。例: "Check1")
+        public string WindowPatternName { get; set; } = "GinghamCheck2";
     }
 }

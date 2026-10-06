@@ -61,6 +61,27 @@ else
         <div class="row">
             <p></p>
         </div>
+        @if (enabledWindowRandom)
+        {
+            <div class="row" style="margin-left:1em;">
+                <div class="col-sm-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="windowpattern" @bind="windowRandom" /> 窓の中の柄をランダムにする
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <select class="form-select form-select-sm" value="@windowPatternName" disabled="@windowRandom" @onchange="OnChangeWindowPattern">
+                        @foreach (var name in PlaidRegistry.InnerNames)
+                        {
+                            <option value="@name">@name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <p></p>
+        </div>
         <div class="row">
             <div class="col-sm-4">
                 <button class="btn btn-secondary" @onclick="GetColor_Button">色ランダム1</button>
@@ -203,6 +224,10 @@ else
     private bool drawImage = false;
     private string? xmlText;
 
+    private bool enabledWindowRandom = false;
+    private bool windowRandom = true;
+    private string windowPatternName = "RandomCheck";
+
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(50);
@@ -257,7 +282,8 @@ else
             "RoundPatch1",
             "RoundPatch2",
             "StitchCheck1",
-            "StitchCheck2"
+            "StitchCheck2",
+            "WindowCheck1"
     };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
@@ -310,6 +336,8 @@ else
             {
                 model.BaseAlpha = 255;
             }
+            model.WindowPatternRandom = windowRandom;
+            model.WindowPatternName = windowPatternName;
 
             //イメージ作成
             bitmap = BussinessLogic.NewCreateImage(fileWidth, fileHeight);
@@ -341,6 +369,10 @@ else
     {
         if (e.Value == null) return;
         selectKind = e.Value.ToString();
+
+        enabledWindowRandom = false;
+        windowRandom = false;
+        if (selectKind == "WindowCheck1") { enabledWindowRandom = true; windowRandom = true; }
     }
 
     private void OnChangeColor1(ChangeEventArgs e)
@@ -446,6 +478,12 @@ else
     {
         if (e.Value == null) return;
         plaidsize = e.Value.ToString();
+    }
+
+    private void OnChangeWindowPattern(ChangeEventArgs e)
+    {
+        if (e.Value == null) return;
+        windowPatternName = e.Value.ToString();
     }
 
     private void GetColor_Button(MouseEventArgs e)
