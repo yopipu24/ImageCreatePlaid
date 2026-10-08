@@ -4,7 +4,7 @@ namespace ImageCreatePlaid
 {
     public class WindowCheck1 : PlaidInterface
     {
-        private const int ShapeTypeCount = 8;
+        internal const int ShapeTypeCount = 8;
 
         public SKBitmap EditImage(SKBitmap bmp, PlaidModel model)
         {
@@ -216,7 +216,7 @@ namespace ImageCreatePlaid
 
         // ---- 窓の形(中心が原点、おおよそ w×h に収まる) ----
 
-        private static SKPath CreateShape(int type, float w, float h, Random rand)
+        internal static SKPath CreateShape(int type, float w, float h, Random rand)
         {
             float hw = w / 2f;
             float hh = h / 2f;

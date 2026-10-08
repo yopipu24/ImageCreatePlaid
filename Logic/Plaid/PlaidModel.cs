@@ -65,5 +65,10 @@
         public bool WindowPatternRandom { get; set; } = true;
         // 指定する場合のパターン名(PlaidRegistry.InnerNames のどれか。例: "Check1")
         public string WindowPatternName { get; set; } = "GinghamCheck2";
+
+        // 開口部以外ランダムにするか(true)、指定するか(false)
+        public bool PartialPatternRandom { get; set; } = true;
+        // 指定する場合のパターンモード(0～4）
+        public int PartialCheckMode { get; set; } = 4;
     }
 }

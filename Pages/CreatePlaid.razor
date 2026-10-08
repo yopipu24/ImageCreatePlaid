@@ -78,6 +78,24 @@ else
                     </select>
                 </div>
             </div>
+            @if (enabledPartialCheck)
+            {
+                <div class="row" style="margin-left:1em;">
+                    <div class="col-sm-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="partialpattern" @bind="partialRandom" /> 枠をランダムにする
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <select class="form-select form-select-sm" value="@PartialCheckModeName" disabled="@partialRandom" @onchange="OnChangePartialPattern">
+                            @foreach (var name in partialCheckList)
+                            {
+                                <option value="@name">@name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            }
         }
         <div class="row">
             <p></p>
@@ -227,6 +245,10 @@ else
     private bool enabledWindowRandom = false;
     private bool windowRandom = true;
     private string windowPatternName = "RandomCheck";
+    private bool enabledPartialCheck = false;
+    private bool partialRandom = true;
+    private string[] partialCheckList = new string[] { "窓・コーナー", "左右の縁", "周辺フェード", "額縁", "アーチ枠" };
+    private string PartialCheckModeName = "額縁";
 
     protected override async Task OnInitializedAsync()
     {
@@ -283,7 +305,8 @@ else
             "RoundPatch2",
             "StitchCheck1",
             "StitchCheck2",
-            "WindowCheck1"
+            "WindowCheck1",
+            "PartialCheck1"
     };
         kindList.AddRange(kindLists.ToList());
         selectKind = kindList[0];
@@ -338,6 +361,12 @@ else
             }
             model.WindowPatternRandom = windowRandom;
             model.WindowPatternName = windowPatternName;
+            model.PartialPatternRandom = partialRandom;
+            model.PartialCheckMode = PartialCheckModeName == "窓・コーナー" ? 0 :
+                                     PartialCheckModeName == "左右の縁" ? 1 :
+                                     PartialCheckModeName == "周辺フェード" ? 2 :
+                                     PartialCheckModeName == "額縁" ? 3 :
+                                     PartialCheckModeName == "アーチ枠" ? 4 : 3;
 
             //イメージ作成
             bitmap = BussinessLogic.NewCreateImage(fileWidth, fileHeight);
@@ -373,6 +402,9 @@ else
         enabledWindowRandom = false;
         windowRandom = false;
         if (selectKind == "WindowCheck1") { enabledWindowRandom = true; windowRandom = true; }
+        enabledPartialCheck = false;
+        partialRandom = false;
+        if (selectKind == "PartialCheck1") { enabledWindowRandom = true; windowRandom = true; enabledPartialCheck = true; partialRandom = true; }
     }
 
     private void OnChangeColor1(ChangeEventArgs e)
@@ -484,6 +516,12 @@ else
     {
         if (e.Value == null) return;
         windowPatternName = e.Value.ToString();
+    }
+
+    private void OnChangePartialPattern(ChangeEventArgs e)
+    {
+        if (e.Value == null) return;
+        PartialCheckModeName = e.Value.ToString();
     }
 
     private void GetColor_Button(MouseEventArgs e)
