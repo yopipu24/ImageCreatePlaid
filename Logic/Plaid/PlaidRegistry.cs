@@ -39,6 +39,18 @@
             ["RoundPatch2"] = () => new RoundPatch2(),
             ["StitchCheck1"] = () => new StitchCheck1(),
             ["StitchCheck2"] = () => new StitchCheck2(),
+            ["GlitchMosaicCheck1"] = () => new GlitchMosaicCheck1(),
+            ["GlitchMosaicCheck2"] = () => new GlitchMosaicCheck2(),
+            ["FibonacciCheck1"] = () => new FibonacciCheck1(),
+            ["FibonacciCheck2"] = () => new FibonacciCheck2(),
+            ["CuteCheck1"] = () => new CuteCheck1(),
+            ["CuteCheck2"] = () => new CuteCheck2(),
+            ["ExtremeRandomCheck1"] = () => new ExtremeRandomCheck1(),
+            ["ExtremeRandomCheck2"] = () => new ExtremeRandomCheck2(),
+            ["VoronoiShatteredCheck"] = () => new VoronoiShatteredCheck(),
+            ["PhaseShiftWaveCheck"] = () => new PhaseShiftWaveCheck(),
+            ["MondrianTreePartitionCheck"] = () => new MondrianTreePartitionCheck(),
+            ["KaleidoscopicGridCheck"] = () => new KaleidoscopicGridCheck(),
         };
 
         // 画面の選択肢に使う、窓の中に入れられる柄の名前の一覧
